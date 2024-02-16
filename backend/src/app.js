@@ -14,7 +14,9 @@ const server = http.createServer(function (req, res) {
 
   switch (req.url) {
     case "/":
+    case "/home":
       basePath = createPath("homepage");
+      res.statusCode = 200;
       break;
 
     default:
