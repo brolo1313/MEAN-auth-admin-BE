@@ -21,7 +21,7 @@ app.listen(port, host, (error) => {
 app.use(
   morgan(":method :url :status :res[content-length] - :response-time ms")
 );
-app.use(express.static(path.join(__dirname, 'styles')));
+app.use(express.static(path.join(__dirname, "styles")));
 
 //API
 app.get(["/", "/home"], (req, res) => {

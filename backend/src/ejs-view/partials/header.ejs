@@ -1,7 +1,7 @@
 <nav>
   <ul>
     <li><a href="/">Home</a></li>
-    <li><a href="/login">Sing In</a></li>
+    <li><a style="cursor:pointer" onclick="navigateToLogin('/login', event)">Sing In</a></li>
   </ul>
 </nav>
 
@@ -36,3 +36,10 @@
     line-height: 60px;
   }
 </style>
+
+<script>
+  function navigateToLogin(url) {
+    let newUrlIS =  window.location.origin + url;
+    history.pushState({}, null, newUrlIS);
+  }
+</script>
