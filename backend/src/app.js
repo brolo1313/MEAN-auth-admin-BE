@@ -4,7 +4,7 @@ const morgan = require("morgan");
 const app = express();
 const mongoose = require("mongoose");
 const User = require("./models/user");
-const Plans = require("./models/plan");
+const Plan = require("./models/plan");
 
 const createPath = require("./ejs-view/helpers/helper");
 
@@ -44,7 +44,7 @@ app.get(["/", "/home"], (req, res) => {
 });
 
 app.get(["/plans"], (req, res) => {
-  Plans.find()
+  Plan.find()
     .then((planList) => res.send(planList))
     .catch((error) => {
       console.log(error);
@@ -53,7 +53,7 @@ app.get(["/plans"], (req, res) => {
 });
 
 app.delete("/plans/:id", (req, res) => {
-    Plans.findByIdAndDelete(req.params.id)
+    Plan.findByIdAndDelete(req.params.id)
     .then((result) => {
       res.sendStatus(200);
     })
@@ -76,20 +76,21 @@ app.get("/login", (req, res) => {
 // //   res.render(createPath("homepage"), { title: "Home Page" });
 // });
 
-app.get("/data.json", (req, res) => {
-  res.sendFile(path.join(__dirname, "./ejs-view/helpers/data.json"));
-});
+// app.get("/data.json", (req, res) => {
+//   res.sendFile(path.join(__dirname, "./ejs-view/helpers/data.json"));
+// });
 
-app.post("/add-title", (req, res) => {
-  console.log("req add-title", req.body);
-  const { name, description } = req.body;
-  const pageTitle = {
-    id: new Date(),
-    date: new Date().toLocaleDateString(),
-    name,
-    description,
-  };
-  res.send(pageTitle);
+app.post("/add-plan", (req, res) => {
+     // Access the data sent from the client-side form
+     const { title, details, link, coverImage, logoImage } = req.body;
+    
+     const plan = new Plan({ title, details, link, coverImage, logoImage });
+     plan
+       .save()
+       .then((result) =>  res.status(200).send(result))
+       .catch((error) => {
+         console.log(error);
+       });
 });
 
 app.use((req, res) => {

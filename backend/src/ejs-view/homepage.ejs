@@ -10,7 +10,7 @@
       right: 45px;
     }
 
-    button {
+    #addedBtn {
       width: 70px;
       height: 70px;
       border-radius: 50%;
@@ -196,16 +196,97 @@
     .skeleton-footer {
       width: 30%;
     }
+
+    /* MODAL */
+    .modal {
+      gap: 0.4rem;
+      width: 450px;
+      padding: 1.3rem;
+      position: fixed;
+      z-index: 2;
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 15px;
+
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .modal input {
+      padding: 0.7rem 0rem;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 0.9em;
+      width: 100%;
+      margin-bottom: 10px;
+      text-indent: 10px;
+    }
+
+    .modal p {
+      font-size: 0.9rem;
+      color: #777;
+      margin: 0.4rem 0 0.2rem;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      font-weight: 600;
+    }
+
+    .btn-added {
+      display: inline-block;
+      padding: 0.8rem 2.4rem;
+      font-weight: 700;
+      background-color: black;
+      color: white;
+      border-radius: 5px;
+      text-align: center;
+      font-size: 1em;
+      margin-top: 10px;
+    }
+
+    .btn-open {
+      position: absolute;
+      bottom: 150px;
+    }
+
+    .btn-close {
+      padding: 0.5rem 0.7rem;
+      border-radius: 50%;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(3px);
+      z-index: 1;
+    }
+
+    .hidden {
+      display: none;
+    }
   </style>
   <body>
     <%- include('./partials/header.ejs') %>
     <div class="added-btn">
-      <button onclick="addedData()">POST</button>
+      <button
+        id="addedBtn"
+        onclick="openModal()"
+      >
+        POST
+      </button>
     </div>
 
     <div class="page_container">
       <div class="d-flex flex-column">
-
         <div class="container">
           <template id="card-template">
             <div
@@ -256,7 +337,60 @@
           </template>
         </div>
       </div>
+
+      <section class="modal hidden">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          "
+        >
+          <h3 style="color: black">Create Plan</h3>
+          <div>
+            <button class="btn-close">⨉</button>
+          </div>
+        </div>
+
+        <div id="plan-form">
+          <input
+            type="text"
+            id="title"
+            placeholder="title"
+          />
+          <input
+            type="text"
+            id="details"
+            placeholder="description"
+          />
+          <input
+            type="text"
+            id="link"
+            placeholder="https://www.example.org"
+          />
+          <input
+            type="text"
+            id="coverImage"
+            placeholder="https://cloudimage/daily-now"
+          />
+          <input
+            type="text"
+            id="logoImage"
+            placeholder="https://googleusercontent.com/image"
+          />
+          <div style="text-align: center">
+            <button
+              onclick="submitForm()"
+              class="btn-added"
+            >
+              Added
+            </button>
+          </div>
+        </div>
+      </section>
     </div>
+
+    <div class="overlay hidden"></div>
 
     <script
       type="module"
@@ -268,6 +402,11 @@
     ></script>
 
     <script>
+      const modal = document.querySelector(".modal");
+      const overlay = document.querySelector(".overlay");
+      const openModalBtn = document.querySelector(".btn-open");
+      const closeModalBtn = document.querySelector(".btn-close");
+
       //Clone the card template
       const container = document.querySelector(".container");
       const cardTemplate = document.getElementById("card-template");
@@ -275,6 +414,27 @@
         container.append(cardTemplate.content.cloneNode(true));
       }
 
+      // close modal function
+      const closeModal = function () {
+        modal?.classList.add("hidden");
+        overlay?.classList.add("hidden");
+      };
+
+      // close the modal when the close button and overlay is clicked
+      closeModalBtn.addEventListener("click", closeModal);
+      overlay.addEventListener("click", closeModal);
+
+      // close modal when the Esc key is pressed
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && !modal.classList.contains("hidden")) {
+          closeModal();
+        }
+      });
+
+      function openModal() {
+        modal.classList.remove("hidden");
+        overlay.classList.remove("hidden");
+      }
       function deletePlan(id) {
         console.log("delete by id:", id);
         if (id) {
@@ -286,21 +446,42 @@
           });
         }
       }
-      function addedData() {
-        fetch("/add-title", {
+
+      function submitForm() {
+        const title = document.getElementById("title").value;
+        const details = document.getElementById("details").value;
+        const link = document.getElementById("link").value;
+        const coverImage = document.getElementById("coverImage").value;
+        const logoImage = document.getElementById("logoImage").value;
+
+        fetch("/add-plan", {
           method: "POST",
-          body: JSON.stringify({
-            name: "Test",
-            description: "Post request",
-          }),
           headers: {
-            "Content-type": "application/json; charset=UTF-8",
+            "Content-Type": "application/json",
           },
+          body: JSON.stringify({
+            title: title,
+            details: details,
+            link: link,
+            coverImage: coverImage,
+            logoImage: logoImage,
+          }),
         })
-          .then((response) => response.json())
-          .then((json) => {
-            document.getElementById("title").innerText = json.name;
-            document.getElementById("description").innerText = json.description;
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            console.log("Success:", data);
+            closeModal();
+            fetchData();
+            // Optionally, you can handle success response here
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            // Optionally, you can handle error response here
           });
       }
       function fetchData() {
@@ -311,15 +492,26 @@
             posts.forEach((post) => {
               const div = cardTemplate.content.cloneNode(true);
               div.getElementById("card-link").href = post.link;
-              div.getElementById("logo-img").src = post.logoImage;
+              div.getElementById("logo-img").src = post.logoImage
+                ? post.logoImage
+                : "https://shorturl.at/lCIVZ";
               div.getElementById("card-title").textContent = post.title;
               div.getElementById("card-details").textContent = post.details;
-              div.getElementById("cover-img").src = post.coverImage;
+              div.getElementById("cover-img").src = post.coverImage
+                ? post.coverImage
+                : "https://shorturl.at/iKTX8";
+
               div.getElementById("card-footer").innerHTML = `
-                    <ion-icon name="arrow-up"></ion-icon>
+              ${
+                post.link
+                  ? `<a rel="githubpage" href=${post.link} target="_blank"><ion-icon name="arrow-up"></ion-icon></a>`
+                  : `<div style="cursor: not-allowed;"><a rel="githubpage" style="pointer-events: none;" href=${post.link} target="_blank"><ion-icon style="cursor: not-allowed;" name="arrow-up"></ion-icon></a></div>`
+              }
                     <ion-icon name="create-outline"></ion-icon>
-                    <ion-icon onclick="deletePlan('${post._id}')" name="trash-outline"></ion-icon>
-`;
+                    <ion-icon onclick="deletePlan('${
+                      post._id
+                    }')" name="trash-outline"></ion-icon>`;
+
               container.append(div);
             });
           })
