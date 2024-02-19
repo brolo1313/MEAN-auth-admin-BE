@@ -39,6 +39,7 @@ body {
     font-family: 'Roboto', sans-serif;
     background: linear-gradient(to bottom, #00d2ff, #928dab);
     color: #fff;
+    min-height: calc(100vh - 80px);
 }
 
 /**

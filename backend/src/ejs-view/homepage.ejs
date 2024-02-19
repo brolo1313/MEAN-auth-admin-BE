@@ -195,7 +195,13 @@
   <body>
     <%- include('./partials/header.ejs') %>
     <div class="page_container">
-      <button onclick="fetchData()">click</button>
+      <h1 id="title"></h1>
+      <p id="description"></p>
+
+      <div style="min-height: 100px">
+        <button onclick="fetchData()">get data</button>
+        <button onclick="addedData()">added page title</button>
+      </div>
 
       <div class="container">
         <!-- <h1>Home page</h1>
@@ -271,10 +277,28 @@
       //Clone the card template
       const container = document.querySelector(".container");
       const cardTemplate = document.getElementById("card-template");
-      for (let i = 0; i < 4; i++) {
+      for (let i = 0; i < 2; i++) {
         container.append(cardTemplate.content.cloneNode(true));
       }
 
+      function addedData() {
+        fetch("/add-title", {
+          method: "POST",
+          body: JSON.stringify({
+            name: "Test",
+            description: "Post request",
+          }),
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+          },
+        })
+          .then((response) => response.json())
+          .then((json) => {
+            document.getElementById("title").innerText = json.name;
+            document.getElementById("description").innerText =
+            json.description;
+          });
+      }
       function fetchData() {
         fetch("/data.json") // Adjust the path as per the location of your data.json file
           .then((response) => response.json())

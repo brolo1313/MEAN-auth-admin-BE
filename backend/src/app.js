@@ -23,6 +23,8 @@ app.use(
 );
 app.use(express.static(path.join(__dirname, "./ejs-view/helpers/data.json")));
 app.use(express.static(path.join(__dirname, "styles")));
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
 //API
 app.get(["/", "/home"], (req, res) => {
@@ -37,8 +39,20 @@ app.get("/login", (req, res) => {
 });
 
 app.get("/data.json", (req, res) => {
-    res.sendFile(path.join(__dirname, "./ejs-view/helpers/data.json"));
-  });
+  res.sendFile(path.join(__dirname, "./ejs-view/helpers/data.json"));
+});
+
+app.post("/add-title", (req, res) => {
+  console.log('req add-title',req.body);
+  const { name, description } = req.body;
+  const pageTitle = {
+    id: new Date(),
+    date: new Date().toLocaleDateString(),
+    name,
+    description,
+  };
+  res.send(pageTitle);
+});
 
 app.use((req, res) => {
   res.status(404).render(createPath("error"));
