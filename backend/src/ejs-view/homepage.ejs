@@ -3,15 +3,26 @@
   <%- include('./partials/head.ejs') %>
   <style>
     @import url("https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;700&display=swap");
-    * {
-      margin: 0;
-      padding: 0;
-      -webkit-box-sizing: border-box;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: "Source Sans Pro", sans-serif;
+    button {
+      display: inline-block;
+      outline: none;
+      cursor: pointer;
+      font-weight: 500;
+      border: 1px solid transparent;
+      border-radius: 2px;
+      height: 36px;
+      line-height: 34px;
+      font-size: 14px;
+      color: #ffffff;
+      background-color: #007c89;
+      transition: background-color 0.2s ease-in-out 0s,
+        opacity 0.2s ease-in-out 0s;
+      padding: 0 18px;
+      :hover {
+        color: #ffffff;
+        background-color: #006570;
+      }
+      border-radius: 10px;
     }
 
     a {
@@ -195,72 +206,70 @@
   <body>
     <%- include('./partials/header.ejs') %>
     <div class="page_container">
-      <h1 id="title"></h1>
-      <p id="description"></p>
+      <div class="d-flex flex-column">
+        <div
+          style="display: flex; flex-direction: column; align-items: center"
+          class="title-wrapper"
+        >
+          <h1 id="title"></h1>
+          <p id="description"></p>
+        </div>
 
-      <div style="min-height: 100px">
-        <button onclick="fetchData()">get data</button>
-        <button onclick="addedData()">added page title</button>
-      </div>
+        <div style="display: flex; justify-content: center; column-gap: 10px;">
+          <button onclick="fetchData()">GET</button>
+          <button onclick="addedData()">POST</button>
+        </div>
 
-      <div class="container">
-        <!-- <h1>Home page</h1>
-        <p>Hello it's a site home page</p>
-  
-        <% if (homeMocks.length) { %> <% homeMocks.forEach(({ link, name }) => {
-        %>
-        <li>
-          <a href="<%= link %>"><%= name %></a>
-        </li>
-        <% }) %> <% } %> -->
-        <template id="card-template">
-          <a
-            class="card"
-            id="card-link"
-            target="_blank"
-          >
-            <div class="card__header">
-              <div>
-                <img
-                  class="header__img skeleton"
-                  id="logo-img"
-                  alt=""
-                />
-              </div>
-              <h3
-                class="card__header header__title"
-                id="card-title"
-              >
-                <div class="skeleton skeleton-text"></div>
-                <div class="skeleton skeleton-text"></div>
-              </h3>
-            </div>
-
-            <div class="card__body">
-              <div
-                class="card__body body__text"
-                id="card-details"
-              >
-                <div class="skeleton skeleton-text skeleton-text__body"></div>
-              </div>
-
-              <div class="card__body body__img">
-                <img
-                  class="skeleton"
-                  alt=""
-                  id="cover-img"
-                />
-              </div>
-            </div>
-
-            <div
-              class="card__footer"
-              id="card-footer"
+        <div class="container">
+          <template id="card-template">
+            <a
+              class="card"
+              id="card-link"
+              target="_blank"
             >
-              <div class="skeleton skeleton-text skeleton-footer"></div>
-            </div>
-          </a>
-        </template>
+              <div class="card__header">
+                <div>
+                  <img
+                    class="header__img skeleton"
+                    id="logo-img"
+                    alt=""
+                  />
+                </div>
+                <h3
+                  class="card__header header__title"
+                  id="card-title"
+                >
+                  <div class="skeleton skeleton-text"></div>
+                  <div class="skeleton skeleton-text"></div>
+                </h3>
+              </div>
+
+              <div class="card__body">
+                <div
+                  class="card__body body__text"
+                  id="card-details"
+                >
+                  <div class="skeleton skeleton-text skeleton-text__body"></div>
+                </div>
+
+                <div class="card__body body__img">
+                  <img
+                    class="skeleton"
+                    alt=""
+                    id="cover-img"
+                  />
+                </div>
+              </div>
+
+              <div
+                class="card__footer"
+                id="card-footer"
+              >
+                <div class="skeleton skeleton-text skeleton-footer"></div>
+              </div>
+            </a>
+          </template>
+        </div>
       </div>
     </div>
 
@@ -295,8 +304,7 @@
           .then((response) => response.json())
           .then((json) => {
             document.getElementById("title").innerText = json.name;
-            document.getElementById("description").innerText =
-            json.description;
+            document.getElementById("description").innerText = json.description;
           });
       }
       function fetchData() {

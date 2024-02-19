@@ -33,9 +33,7 @@ body {
 
 .page_container {
     display: flex;
-    align-items: center;
     justify-content: center;
-    flex-direction: column;
     font-family: 'Roboto', sans-serif;
     background: linear-gradient(to bottom, #00d2ff, #928dab);
     color: #fff;
