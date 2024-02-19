@@ -28,22 +28,30 @@
     }
 
     .container {
-      display: -webkit-box;
-      display: -ms-flexbox;
-      display: flex;
-      -ms-flex-wrap: wrap;
-      flex-wrap: wrap;
-      -webkit-box-pack: center;
-      -ms-flex-pack: center;
-      justify-content: center;
-      -webkit-box-align: center;
-      -ms-flex-align: center;
-      align-items: center;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-auto-rows: auto;
+      grid-gap: 1rem;
     }
 
     @media screen and (max-width: 600px) {
       .container {
         margin: -0.5rem;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      }
+    }
+
+    @media screen and (min-width: 900px) {
+      .container {
+        margin: -0.5rem;
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media screen and (min-width: 1200px) {
+      .container {
+        margin: -0.5rem;
+        grid-template-columns: repeat(3, 1fr);
       }
     }
 
