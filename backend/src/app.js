@@ -2,15 +2,25 @@ const express = require("express");
 const path = require("path");
 const morgan = require("morgan");
 const app = express();
+const mongoose = require("mongoose");
+const User = require("./models/user")
 
 const homeMocksData = require("./ejs-view/helpers/mocks");
 const createPath = require("./ejs-view/helpers/helper");
 
 const host = "localhost";
 const port = 7000;
+const DB = 'mongodb+srv://brolo:pass1234@cluster0.5keofok.mongodb.net/';
 
 app.set("view engine", "ejs");
 
+// Connect to MongoDB
+mongoose
+  .connect(DB)
+  .then((res) => console.log('Connected to DB'))
+  .catch((error) => console.log(error));
+
+  // Start the server
 app.listen(port, host, (error) => {
   error
     ? console.log(error)
@@ -24,7 +34,7 @@ app.use(
 app.use(express.static(path.join(__dirname, "./ejs-view/helpers/data.json")));
 app.use(express.static(path.join(__dirname, "styles")));
 app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
+app.use(express.json()); // Parse JSON request body
 
 //API
 app.get(["/", "/home"], (req, res) => {
