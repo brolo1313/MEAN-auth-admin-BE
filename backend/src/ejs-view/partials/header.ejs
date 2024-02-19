@@ -1,41 +1,10 @@
 <nav>
   <ul>
     <li><a href="/">Home</a></li>
-    <li><a style="cursor:pointer" onclick="navigateToLogin('/login', event)">Sing In</a></li>
+    <li><a style="cursor:pointer" href="/login">Sing In</a></li>
   </ul>
 </nav>
 
-<style>
-  nav {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    min-height: 60px;
-    display: flex;
-    justify-content: flex-end;
-    background-color: rgba(0, 0, 0, 0.7);
-  }
-
-  nav ul {
-    margin: 0;
-    padding: 0;
-    display: flex;
-  }
-
-  nav li {
-    list-style: none;
-  }
-
-  nav a {
-    text-decoration: none;
-    color: #fff;
-    min-height: 60px;
-    display: block;
-    padding: 10px 20px;
-    line-height: 60px;
-  }
-</style>
 
 <script>
   function navigateToLogin(url) {

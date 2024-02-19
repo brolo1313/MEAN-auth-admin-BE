@@ -1,3 +1,7 @@
+@import url('./header.css');
+
+
+
 /*! normalize.css v7.0.0 | MIT License | github.com/necolas/normalize.css */
 
 /* Document
@@ -23,14 +27,16 @@
  */
 
 body {
+    font-size: 20px;
     margin: 0;
+}
+
+.page_container {
     display: flex;
-    min-height: 100vh;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     font-family: 'Roboto', sans-serif;
-    font-size: 20px;
     background: linear-gradient(to bottom, #00d2ff, #928dab);
     color: #fff;
 }
