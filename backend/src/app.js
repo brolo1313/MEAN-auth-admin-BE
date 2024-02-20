@@ -18,6 +18,7 @@ const PORT = process.env.PORT || 4200;
 
 app.set("view engine", "ejs");
 
+console.log(process.env);
 // Connect to MongoDB
 mongoose
   .connect(process.env.MONGO_URL)
@@ -113,3 +114,6 @@ app.put("/update-plan/:id", (req, res) => {
 app.use((req, res) => {
   res.status(404).render(createPath("error"));
 });
+
+
+module.exports = app;
