@@ -18,7 +18,6 @@ const PORT = process.env.PORT || 4200;
 
 app.set("view engine", "ejs");
 
-console.log(process.env);
 // Connect to MongoDB
 mongoose
   .connect(process.env.MONGO_URL)
