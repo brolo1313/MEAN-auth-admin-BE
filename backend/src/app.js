@@ -53,7 +53,7 @@ app.get(["/plans"], (req, res) => {
 });
 
 app.delete("/plans/:id", (req, res) => {
-    Plan.findByIdAndDelete(req.params.id)
+  Plan.findByIdAndDelete(req.params.id)
     .then((result) => {
       res.sendStatus(200);
     })
@@ -81,16 +81,29 @@ app.get("/login", (req, res) => {
 // });
 
 app.post("/add-plan", (req, res) => {
-     // Access the data sent from the client-side form
-     const { title, details, link, coverImage, logoImage } = req.body;
-    
-     const plan = new Plan({ title, details, link, coverImage, logoImage });
-     plan
-       .save()
-       .then((result) =>  res.status(200).send(result))
-       .catch((error) => {
-         console.log(error);
-       });
+  // Access the data sent from the client-side form
+  const { title, details, link, coverImage, logoImage } = req.body;
+
+  const plan = new Plan({ title, details, link, coverImage, logoImage });
+  plan
+    .save()
+    .then((result) => res.status(200).send(result))
+    .catch((error) => {
+      console.log(error);
+    });
+});
+
+app.put("/update-plan/:id", (req, res) => {
+  const { title, details, link, coverImage, logoImage } = req.body;
+
+  const { id } = req.params;
+
+  Plan
+    .findByIdAndUpdate(id, {title, details, link, coverImage, logoImage })
+    .then((result) => res.status(200).send(result))
+    .catch((error) => {
+      console.log(error);
+    });
 });
 
 app.use((req, res) => {

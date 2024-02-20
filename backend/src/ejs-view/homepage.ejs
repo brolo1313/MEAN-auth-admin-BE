@@ -36,21 +36,18 @@
 
     @media screen and (max-width: 600px) {
       .container {
-        margin: -0.5rem;
         grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       }
     }
 
     @media screen and (min-width: 900px) {
       .container {
-        margin: -0.5rem;
         grid-template-columns: repeat(2, 1fr);
       }
     }
 
     @media screen and (min-width: 1200px) {
       .container {
-        margin: -0.5rem;
         grid-template-columns: repeat(3, 1fr);
       }
     }
@@ -231,12 +228,21 @@
       text-indent: 10px;
     }
 
+    .modal input::placeholder {
+      color: gainsboro;
+      font-size: 1.2em;
+      font-style: italic;
+    }
+
     .modal p {
       font-size: 0.9rem;
       color: #777;
       margin: 0.4rem 0 0.2rem;
     }
 
+    #plan-form label {
+      color: darkgray;
+    }
     button {
       cursor: pointer;
       border: none;
@@ -287,63 +293,64 @@
     <div class="added-btn">
       <button
         id="addedBtn"
-        onclick="openModal()"
+        onclick="openModalForCreate()"
       >
-        POST
+        <ion-icon
+          style="font-size: 40px"
+          name="add-outline"
+        ></ion-icon>
       </button>
     </div>
 
     <div class="page_container">
-      <div class="d-flex flex-column">
-        <div class="container">
-          <template id="card-template">
-            <div
-              class="card"
-              id="card-link"
-            >
-              <div class="card__header">
-                <div>
-                  <img
-                    class="header__img skeleton"
-                    id="logo-img"
-                    alt=""
-                  />
-                </div>
-                <h3
-                  class="card__header header__title"
-                  id="card-title"
-                >
-                  <div class="skeleton skeleton-text"></div>
-                  <div class="skeleton skeleton-text"></div>
-                </h3>
+      <div class="container">
+        <template id="card-template">
+          <div
+            class="card"
+            id="card-link"
+          >
+            <div class="card__header">
+              <div>
+                <img
+                  class="header__img skeleton"
+                  id="logo-img"
+                  alt=""
+                />
               </div>
-
-              <div class="card__body">
-                <div
-                  class="card__body body__text"
-                  id="card-details"
-                >
-                  <div class="skeleton skeleton-text skeleton-text__body"></div>
-                </div>
-
-                <div class="card__body body__img">
-                  <img
-                    class="skeleton"
-                    alt=""
-                    id="cover-img"
-                  />
-                </div>
-              </div>
-
-              <div
-                class="card__footer"
-                id="card-footer"
+              <h3
+                class="card__header header__title"
+                id="card-title"
               >
-                <div class="skeleton skeleton-text skeleton-footer"></div>
+                <div class="skeleton skeleton-text"></div>
+                <div class="skeleton skeleton-text"></div>
+              </h3>
+            </div>
+
+            <div class="card__body">
+              <div
+                class="card__body body__text"
+                id="card-details"
+              >
+                <div class="skeleton skeleton-text skeleton-text__body"></div>
+              </div>
+
+              <div class="card__body body__img">
+                <img
+                  class="skeleton"
+                  alt=""
+                  id="cover-img"
+                />
               </div>
             </div>
-          </template>
-        </div>
+
+            <div
+              class="card__footer"
+              id="card-footer"
+            >
+              <div class="skeleton skeleton-text skeleton-footer"></div>
+            </div>
+          </div>
+        </template>
       </div>
 
       <section class="modal hidden">
@@ -354,33 +361,43 @@
             align-items: center;
           "
         >
-          <h3 style="color: black">Create Plan</h3>
+          <h3
+            id="modalTitle"
+            style="color: black"
+          >
+            Create Plan
+          </h3>
           <div>
             <button class="btn-close">⨉</button>
           </div>
         </div>
 
         <div id="plan-form">
+          <label for="title">Title</label>
           <input
             type="text"
             id="title"
-            placeholder="title"
+            placeholder="new course"
           />
+          <label for="details">Description</label>
           <input
             type="text"
             id="details"
-            placeholder="description"
+            placeholder="with node,js,css"
           />
+          <label for="link">Link</label>
           <input
             type="text"
             id="link"
             placeholder="https://www.example.org"
           />
+          <label for="coverImage">Cover image</label>
           <input
             type="text"
             id="coverImage"
             placeholder="https://cloudimage/daily-now"
           />
+          <label for="logoImage">Logo image</label>
           <input
             type="text"
             id="logoImage"
@@ -388,6 +405,7 @@
           />
           <div style="text-align: center">
             <button
+              id="submitButton"
               onclick="submitForm()"
               class="btn-added"
             >
@@ -426,6 +444,12 @@
       const closeModal = function () {
         modal?.classList.add("hidden");
         overlay?.classList.add("hidden");
+
+        document.getElementById("title").value = "";
+        document.getElementById("details").value = "";
+        document.getElementById("link").value = "";
+        document.getElementById("coverImage").value = "";
+        document.getElementById("logoImage").value = "";
       };
 
       // close the modal when the close button and overlay is clicked
@@ -439,10 +463,43 @@
         }
       });
 
-      function openModal() {
+      function openModalForCreate() {
+        const modalTitle = document.getElementById("modalTitle");
+        const modalButton = document.getElementById("submitButton");
+        modalTitle.textContent = "Create Plan";
+        modalButton.textContent = "Added";
+
         modal.classList.remove("hidden");
         overlay.classList.remove("hidden");
+
+        modalButton.setAttribute("data-mode", "create");
       }
+
+      function openModalForEdit(dataString) {
+        modal.classList.remove("hidden");
+        overlay.classList.remove("hidden");
+
+        const modalTitle = document.getElementById("modalTitle");
+        const modalButton = document.getElementById("submitButton");
+
+        modalTitle.textContent = "Edit Plan";
+        modalButton.textContent = "Update";
+
+        const [title, link, logoImage, details, coverImage, _id] =
+          dataString.split("|");
+
+        document.getElementById("title").value = title;
+        document.getElementById("details").value = details;
+        document.getElementById("link").value = link;
+        document.getElementById("coverImage").value = coverImage;
+        document.getElementById("logoImage").value = logoImage;
+
+        document
+          .getElementById("submitButton")
+          .setAttribute("data-mode", "edit");
+        document.getElementById("submitButton").setAttribute("data-id", _id);
+      }
+
       function deletePlan(id) {
         console.log("delete by id:", id);
         if (id) {
@@ -456,23 +513,37 @@
       }
 
       function submitForm() {
+        const mode = document
+          .getElementById("submitButton")
+          .getAttribute("data-mode");
+        const planId = document
+          .getElementById("submitButton")
+          .getAttribute("data-id");
         const title = document.getElementById("title").value;
         const details = document.getElementById("details").value;
         const link = document.getElementById("link").value;
         const coverImage = document.getElementById("coverImage").value;
         const logoImage = document.getElementById("logoImage").value;
 
-        fetch("/add-plan", {
-          method: "POST",
+        let url = "/add-plan";
+        let method = "POST";
+
+        if (mode === "edit") {
+          url = `/update-plan/${planId.trim()}`;
+          method = "PUT";
+        }
+
+        fetch(url, {
+          method: method,
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            title: title,
-            details: details,
-            link: link,
-            coverImage: coverImage,
-            logoImage: logoImage,
+            title: title.trim(),
+            details: details.trim(),
+            link: link.trim(),
+            coverImage: coverImage.trim(),
+            logoImage: logoImage.trim(),
           }),
         })
           .then((response) => {
@@ -497,6 +568,8 @@
           .then((response) => response.json())
           .then((posts) => {
             container.innerHTML = "";
+
+            const stringifyData = posts;
             posts.forEach((post) => {
               const div = cardTemplate.content.cloneNode(true);
               div.getElementById("card-link").href = post.link;
@@ -515,7 +588,11 @@
                   ? `<a rel="githubpage" href=${post.link} target="_blank"><ion-icon name="arrow-up"></ion-icon></a>`
                   : `<div style="cursor: not-allowed;"><a rel="githubpage" style="pointer-events: none;" href=${post.link} target="_blank"><ion-icon style="cursor: not-allowed;" name="arrow-up"></ion-icon></a></div>`
               }
-                    <ion-icon name="create-outline"></ion-icon>
+                    <ion-icon onclick="openModalForEdit('${post.title} | ${
+                post.link
+              } | ${post.logoImage} | ${post.details} | ${post.coverImage} | ${
+                post._id
+              }')" name="create-outline"></ion-icon>
                     <ion-icon onclick="deletePlan('${
                       post._id
                     }')" name="trash-outline"></ion-icon>`;
