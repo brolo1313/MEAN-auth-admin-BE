@@ -1,30 +1,32 @@
 const express = require("express");
 const path = require("path");
 const morgan = require("morgan");
+const chalk = require("chalk");
 const app = express();
 const mongoose = require("mongoose");
+require('dotenv').config();
+
 const User = require("./models/user");
 const Plan = require("./models/plan");
 
 const createPath = require("./ejs-view/helpers/helper");
 
-const host = "localhost";
-const port = process.env.PORT || 4200;
-const DB = "mongodb+srv://brolo:pass1234@cluster0.5keofok.mongodb.net/";
+const errorMsg = chalk.bgKeyword('white').redBright;
+const successMsg = chalk.bgKeyword('green').white;
 
 app.set("view engine", "ejs");
 
 // Connect to MongoDB
 mongoose
-  .connect(DB)
-  .then((res) => console.log("Connected to DB"))
-  .catch((error) => console.log(error));
+  .connect(process.env.MONGO_URL)
+  .then((res) => console.log(successMsg("Connected to DB")))
+  .catch((error) => console.log(errorMsg(error)));
 
 // Start the server
-app.listen(port, host, (error) => {
+app.listen(process.env.PORT, (error) => {
   error
-    ? console.log(error)
-    : console.log(`Server listens http://${host}:${port}`);
+    ? console.log(errorMsg(error))
+    : console.log(successMsg(`Server listens on https//localhost:${process.env.PORT}`));
 });
 
 //MIDDLEWARE
