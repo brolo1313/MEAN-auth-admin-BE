@@ -14,6 +14,8 @@ const createPath = require("./ejs-view/helpers/helper");
 const errorMsg = chalk.bgKeyword('white').redBright;
 const successMsg = chalk.bgKeyword('green').white;
 
+const PORT = process.env.PORT || 4200; 
+
 app.set("view engine", "ejs");
 
 // Connect to MongoDB
@@ -23,10 +25,10 @@ mongoose
   .catch((error) => console.log(errorMsg(error)));
 
 // Start the server
-app.listen(process.env.PORT, (error) => {
+app.listen(PORT, (error) => {
   error
     ? console.log(errorMsg(error))
-    : console.log(successMsg(`Server listens on https//localhost:${process.env.PORT}`));
+    : console.log(successMsg(`Server listens on https//localhost:${PORT}`));
 });
 
 //MIDDLEWARE
