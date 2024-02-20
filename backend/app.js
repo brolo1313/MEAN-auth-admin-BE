@@ -22,7 +22,7 @@ app.set("view engine", "ejs");
 mongoose
   .connect(process.env.MONGO_URL)
   .then((res) => console.log(successMsg("Connected to DB")))
-  .catch((error) => console.log(errorMsg(error)));
+  .catch((error) => console.log(errorMsg('BD not connected',error)));
 
 // Start the server
 app.listen(PORT, (error) => {
