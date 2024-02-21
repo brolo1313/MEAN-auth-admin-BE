@@ -17,6 +17,7 @@
       border: none;
       color: blue;
       cursor: pointer;
+      background: lightblue;
     }
 
     a {
@@ -32,24 +33,7 @@
       grid-template-columns: repeat(2, 1fr);
       grid-auto-rows: auto;
       grid-gap: 1rem;
-    }
-
-    @media screen and (max-width: 600px) {
-      .container {
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      }
-    }
-
-    @media screen and (min-width: 900px) {
-      .container {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media screen and (min-width: 1200px) {
-      .container {
-        grid-template-columns: repeat(3, 1fr);
-      }
+      margin-top: 20px;
     }
 
     .card {
@@ -70,11 +54,10 @@
       flex-direction: column;
       -ms-flex-pack: distribute;
       justify-content: space-around;
-      width: 330px;
       height: auto;
       -webkit-transition: all 0.2s ease;
       transition: all 0.2s ease;
-      margin: 2rem;
+      margin: 10px 15px;
     }
 
     .card__header {
@@ -240,6 +223,10 @@
       margin: 0.4rem 0 0.2rem;
     }
 
+    #plan-form {
+      margin-bottom: -10px;
+    }
+
     #plan-form label {
       color: darkgray;
     }
@@ -286,6 +273,30 @@
 
     .hidden {
       display: none;
+    }
+
+    @media screen and (max-width: 600px) {
+      .modal {
+        width: 300px;
+      }
+    }
+
+    @media screen and (max-width: 600px) {
+      .container {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      }
+    }
+
+    @media screen and (min-width: 900px) {
+      .container {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media screen and (min-width: 1200px) {
+      .container {
+        grid-template-columns: repeat(3, 1fr);
+      }
     }
   </style>
   <body>
@@ -359,6 +370,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin: 0;
           "
         >
           <h3
