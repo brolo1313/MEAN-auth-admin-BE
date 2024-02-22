@@ -8,6 +8,7 @@ require('dotenv').config();
 
 const planRoutes = require("./routes/plan-routes");
 const homeRoutes = require("./routes/home-routes");
+const apiPlanRoutes = require("./routes/api-plan-routes")
 
 
 const createPath = require("./ejs-view/helpers/helper");
@@ -40,9 +41,13 @@ app.use(express.static(path.join(__dirname, "./ejs-view/helpers/data.json")));
 app.use(express.static(path.join(__dirname, "styles")));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json()); // Parse JSON request body
+
 //ROUTES
 app.use(homeRoutes);
 app.use(planRoutes);
+//API
+app.use(apiPlanRoutes);
+
 
 app.use((req, res) => {
   res.status(404).render(createPath("error"));

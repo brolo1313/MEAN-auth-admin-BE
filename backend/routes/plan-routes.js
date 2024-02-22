@@ -10,9 +10,9 @@ const {
 } = require("../controllers/plan-controller");
 
 router.get(["/plans"], getPlans);
-router.post("/add-plan", createPlan);
+router.post("/plan", createPlan);
 
-router.put("/update-plan/:id", updatePlan);
+router.put("/plan/:id", updatePlan);
 
 router.delete("/plans/:id", deletePlan);
 

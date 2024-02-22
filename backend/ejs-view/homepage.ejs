@@ -537,11 +537,11 @@
         const coverImage = document.getElementById("coverImage").value;
         const logoImage = document.getElementById("logoImage").value;
 
-        let url = "/add-plan";
+        let url = "/plan";
         let method = "POST";
 
         if (mode === "edit") {
-          url = `/update-plan/${planId.trim()}`;
+          url = `/plan/${planId.trim()}`;
           method = "PUT";
         }
 
