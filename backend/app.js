@@ -6,7 +6,6 @@ const app = express();
 const mongoose = require("mongoose");
 require('dotenv').config();
 
-const planRoutes = require("./routes/plan-routes");
 const homeRoutes = require("./routes/home-routes");
 const apiPlanRoutes = require("./routes/api-plan-routes")
 
@@ -44,7 +43,6 @@ app.use(express.json()); // Parse JSON request body
 
 //ROUTES
 app.use(homeRoutes);
-app.use(planRoutes);
 //API
 app.use(apiPlanRoutes);
 

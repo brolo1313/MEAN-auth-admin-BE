@@ -9,7 +9,7 @@ const {
   createPlan,
 } = require("../controllers/plan-controller");
 
-router.get(["/plans"], getPlans);
+router.get("/plans", getPlans);
 router.post("/plan", createPlan);
 
 router.put("/plan/:id", updatePlan);

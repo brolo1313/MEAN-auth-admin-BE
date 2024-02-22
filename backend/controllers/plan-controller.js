@@ -1,4 +1,3 @@
-const createPath = require("../ejs-view/helpers/helper");
 const Plan = require("../models/plan");
 
 const getPlans = (req, res) => {

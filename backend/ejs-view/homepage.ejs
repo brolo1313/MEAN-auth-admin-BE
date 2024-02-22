@@ -58,6 +58,7 @@
       -webkit-transition: all 0.2s ease;
       transition: all 0.2s ease;
       margin: 10px 15px;
+      width: 300px;
     }
 
     .card__header {
@@ -515,7 +516,7 @@
       function deletePlan(id) {
         console.log("delete by id:", id);
         if (id) {
-          fetch(`/plans/${id}`, {
+          fetch(`/api/plans/${id}`, {
             method: "DELETE",
           }).then(() => {
             // window.location.href = "/";
@@ -537,11 +538,11 @@
         const coverImage = document.getElementById("coverImage").value;
         const logoImage = document.getElementById("logoImage").value;
 
-        let url = "/plan";
+        let url = "/api/plan";
         let method = "POST";
 
         if (mode === "edit") {
-          url = `/plan/${planId.trim()}`;
+          url = `/api/plan/${planId.trim()}`;
           method = "PUT";
         }
 
@@ -576,7 +577,7 @@
           });
       }
       function fetchData() {
-        fetch("/plans") // Adjust the path as per the location of your data.json file
+        fetch("/api/plans") // Adjust the path as per the location of your data.json file
           .then((response) => response.json())
           .then((posts) => {
             container.innerHTML = "";
