@@ -1,6 +1,12 @@
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
+
+    {
+        path: '',
+        pathMatch: 'full',
+        redirectTo: 'admin'
+    },
     {
         path: 'admin',
         loadComponent: () => import('./admin-layout/admin-page.component')
