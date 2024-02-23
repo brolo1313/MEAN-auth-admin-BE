@@ -17,18 +17,6 @@ export class AppComponent {
   }
 
   ngOnInit() {
-    console.log('oninit works');
-    this.fetchData();
   }
-
-  fetchData() {
-    this.http.get('https://node-implementation.vercel.app/api/plans').subscribe(
-      (response) => {
-
-      },
-      (error) => {
-        console.error('HTTP Error:', error);
-      }
-    )
-  }
+  
 }
