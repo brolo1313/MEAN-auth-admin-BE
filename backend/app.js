@@ -4,6 +4,7 @@ const morgan = require("morgan");
 const chalk = require("chalk");
 const app = express();
 const mongoose = require("mongoose");
+const cors = require('cors')
 require('dotenv').config();
 
 app.use(cors());
