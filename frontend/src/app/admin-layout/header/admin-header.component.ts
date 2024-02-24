@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { NgIf } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 import { AuthService } from '../auth/services/auth.service';
 
@@ -14,8 +14,13 @@ import { AuthService } from '../auth/services/auth.service';
 export class AdminHeaderComponent {
 
   authService = inject(AuthService)
+  router = inject(Router);
 
   public logOut(){
     this.authService.signOut();
+  }
+
+  public pathToLogin(){
+    this.router.navigate(['/admin/login']);
   }
 }
