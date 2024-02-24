@@ -45,14 +45,14 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json()); // Parse JSON request body
 
 //ROUTES
-app.use(homeRoutes);
+// app.use(homeRoutes);
 //API
 app.use(apiPlanRoutes);
 
 
-app.use((req, res) => {
-  res.status(404).render(createPath("error"));
-});
+// app.use((req, res) => {
+//   res.status(404).render(createPath("error"));
+// });
 
 
 module.exports = app;
