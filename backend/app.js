@@ -49,10 +49,10 @@ app.use(express.json()); // Parse JSON request body
 //API
 app.use(apiPlanRoutes);
 
-
-// app.use((req, res) => {
-//   res.status(404).render(createPath("error"));
-// });
+// It's for routing SPA
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/dist/browser/index.html'));
+});
 
 
 module.exports = app;
