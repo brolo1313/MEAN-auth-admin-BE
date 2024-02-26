@@ -39,7 +39,7 @@ app.listen(PORT, (error) => {
 app.use(
   morgan(":method :url :status :res[content-length] - :response-time ms")
 );
-app.use(express.static(path.join(__dirname, '../frontend')));
+app.use(express.static(path.join(__dirname, "frontend")));
 app.use(express.static(path.join(__dirname, "./ejs-view/helpers/data.json")));
 app.use(express.static(path.join(__dirname, "styles")));
 app.use(express.urlencoded({ extended: false }));
@@ -52,7 +52,7 @@ app.use(apiPlanRoutes);
 
 // It's for routing SPA
 app.all('*', (req, res) => {
-  res.status(200).sendFile(path.join(__dirname, './frontend', 'index.html'));
+  res.status(200).sendFile(__dirname + "\\public\\index.html");
 });
 
 
