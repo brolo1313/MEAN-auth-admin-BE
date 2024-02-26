@@ -51,8 +51,8 @@ app.use(express.json()); // Parse JSON request body
 app.use(apiPlanRoutes);
 
 // It's for routing SPA
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/404.html'));
+app.all('*', (req, res) => {
+  res.status(200).sendFile(path.join(__dirname, './frontend', 'index.html'));
 });
 
 
