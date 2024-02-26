@@ -53,9 +53,9 @@ app.use(apiPlanRoutes);
 
 // It's for routing SPA
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist/browser/index.html'));
+  res.sendFile(path.join(__dirname + "\\dist\\browser\\index.html"));
 });
 
 
-// console.log(__dirname + "\\frontend\\index.html");
+console.log(__dirname + "\\dist\\browser\\index.html");
 module.exports = app;
