@@ -18,7 +18,7 @@ const createPath = require("./ejs-view/helpers/helper");
 const errorMsg = chalk.bgKeyword('white').redBright;
 const successMsg = chalk.bgKeyword('green').white;
 
-const PORT = process.env.PORT || 4200; 
+const PORT = process.env.PORT || 3000; 
 
 app.set("view engine", "ejs");
 
