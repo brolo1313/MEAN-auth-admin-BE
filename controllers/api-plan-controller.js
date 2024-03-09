@@ -4,7 +4,15 @@ const errorHandler = (res, error) => res.status(500).send(error);
 
 const getPlans = (req, res) => {
   Plan.find()
-    .then((plans) => res.status(200).json(plans))
+    .then((plans) => {
+      // Modify each plan object to change '_id' to 'id'
+      const modifiedPlans = plans.map((plan) => {
+        const modifiedPlan = { ...plan.toObject(), id: plan._id };
+        delete modifiedPlan._id; // Remove the original '_id' field
+        return modifiedPlan;
+      });
+      res.status(200).json(modifiedPlans);
+    })
     .catch((error) => {
       console.log(error);
       res.send(error);
