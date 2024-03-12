@@ -1,6 +1,13 @@
 const Plan = require("../models/plan");
 
-const errorHandler = (res, error) => res.status(500).send(error);
+const errorHandler = (res) =>
+  res.status(500).json({
+    app_err_default: {
+      notification: "Помилка сервера",
+      code: 10000,
+      message: "Default Error",
+    },
+  });
 
 const getPlans = (req, res) => {
   Plan.find()
@@ -14,8 +21,7 @@ const getPlans = (req, res) => {
       res.status(200).json(modifiedPlans);
     })
     .catch((error) => {
-      console.log(error);
-      res.send(error);
+      errorHandler(res)
     });
 };
 
@@ -27,7 +33,7 @@ const createPlan = (req, res) => {
     .save()
     .then((plan) => res.status(200).json(plan))
     .catch((error) => {
-      errorHandler(res, error);
+      errorHandler(res)
     });
 };
 
@@ -39,7 +45,7 @@ const updatePlan = (req, res) => {
   Plan.findByIdAndUpdate(id, { title, details, link, coverImage, logoImage })
     .then((plan) => res.status(200).json(plan))
     .catch((error) => {
-      errorHandler(res, error);
+      errorHandler(res)
     });
 };
 
@@ -47,7 +53,7 @@ const deletePlan = (req, res) => {
   Plan.findByIdAndDelete(req.params.id)
     .then(() => res.status(200).json(req.params.id))
     .catch((error) => {
-      errorHandler(res, error);
+      errorHandler(res)
     });
 };
 
