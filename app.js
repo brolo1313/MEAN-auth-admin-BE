@@ -5,15 +5,15 @@ const chalk = require("chalk");
 const app = express();
 const mongoose = require("mongoose");
 const cors = require('cors')
+
+
 require('dotenv').config();
 
 app.use(cors());
 
-const homeRoutes = require("./routes/home-routes");
 const apiPlanRoutes = require("./routes/api-plan-routes")
+const apiAuthRoutes = require("./routes/api-auth-routes")
 
-
-const createPath = require("./ejs-view/helpers/helper");
 
 const errorMsg = chalk.bgKeyword('white').redBright;
 const successMsg = chalk.bgKeyword('green').white;
@@ -50,6 +50,8 @@ app.use(express.json()); // Parse JSON request body
 // app.use(homeRoutes);
 //API
 app.use(apiPlanRoutes);
+app.use(apiAuthRoutes);
+
 
 // It's for routing SPA
 // app.get('*', (req, res) => {
