@@ -1,8 +1,10 @@
 const bcrypt = require("bcryptjs");
 
-const Plan = require("../models/plan");
 const User = require("../models/user");
 const { verifySignUp } = require("../middlewares");
+const jwt = require("jsonwebtoken");
+
+const secret = "test-secret-key"
 
 const errorHandler = (res, error) =>
   res.status(500).json({
@@ -25,9 +27,8 @@ const getUsers = (req, res) => {
     });
 };
 
-const createUser = (req, res) => {
+const signUp = (req, res) => {
   const { username, email, password, role = "admin" } = req.body;
-
 
   const user = new User({
     username,
@@ -43,7 +44,49 @@ const createUser = (req, res) => {
     });
 };
 
+const signIn = (req, res) => {
+  User.findOne({
+    username: req.body.username,
+  })
+    .then((user) => {
+      if (!user) {
+        return res.status(404).send({ message: "User Not found." });
+      }
+
+      const passwordIsValid = bcrypt.compareSync(
+        req.body.password,
+        user.password
+      );
+
+      if (!passwordIsValid) {
+        return res.status(401).send({
+          accessToken: null,
+          message: "Invalid Password!",
+        });
+      }
+
+      const token = jwt.sign({ id: user.id }, secret, {
+        algorithm: "HS256",
+        allowInsecureKeySizes: true,
+        expiresIn: 86400, // 24 hours
+      });
+
+      res.status(200).send({
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        roles: user.roles,
+        accessToken: token,
+      });
+    })
+    .catch((error) => {
+      nativeError(res, error);
+      console.log('error', error);
+    });
+};
+
 module.exports = {
   getUsers,
-  createUser,
+  signUp,
+  signIn,
 };
