@@ -39,15 +39,29 @@ const createPlan = (req, res) => {
 
 const updatePlan = (req, res) => {
   const { title, details, link, coverImage, logoImage } = req.body;
-
   const { id } = req.params;
 
-  Plan.findByIdAndUpdate(id, { title, details, link, coverImage, logoImage })
-    .then((plan) => res.status(200).json(plan))
+  const options = {
+    new: true, // Return the updated document
+    runValidators: true, // Run validators during the update
+  };
+
+  // Perform the update and return the updated document
+  Plan.findByIdAndUpdate(id, { title, details, link, coverImage, logoImage }, options)
+    .then((updatedPlan) => {
+      if (!updatedPlan) {
+        // If the plan with the given id is not found, return a 404 response
+        return res.status(404).json({ message: 'Plan not found' });
+      }
+      // Return the updated plan
+      res.status(200).json(updatedPlan);
+    })
     .catch((error) => {
-      errorHandler(res)
+      // Handle errors using your error handler
+      errorHandler(res, error);
     });
 };
+
 
 const deletePlan = (req, res) => {
   Plan.findByIdAndDelete(req.params.id)
