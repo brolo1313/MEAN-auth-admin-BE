@@ -29,13 +29,28 @@ const createPlan = (req, res) => {
   const { title, details, link, coverImage, logoImage } = req.body;
 
   const plan = new Plan({ title, details, link, coverImage, logoImage });
+
   plan
     .save()
-    .then((plan) => res.status(200).json(plan))
+    .then((savedPlan) => {
+      // Destructure _id from the savedPlan object
+      const { _id, ...restOfPlan } = savedPlan.toObject();
+      
+      // Create a new object with id and the rest of the properties
+      const planWithId = {
+        id: _id,
+        ...restOfPlan,
+      };
+
+      // Send the modified plan with the renamed id field
+      res.status(200).json(planWithId);
+    })
     .catch((error) => {
-      errorHandler(res)
+      // Handle errors using your error handler
+      errorHandler(res, error);
     });
 };
+
 
 const updatePlan = (req, res) => {
   const { title, details, link, coverImage, logoImage } = req.body;
@@ -53,8 +68,16 @@ const updatePlan = (req, res) => {
         // If the plan with the given id is not found, return a 404 response
         return res.status(404).json({ message: 'Plan not found' });
       }
-      // Return the updated plan
-      res.status(200).json(updatedPlan);
+       // Destructure _id and the rest of the properties from updatedPlan
+       const { _id, ...restOfPlan } = updatedPlan.toObject();
+      
+       // Rename _id to id
+       const planWithId = {
+         id: _id,
+         ...restOfPlan
+       };
+ 
+       res.status(200).json(planWithId);
     })
     .catch((error) => {
       // Handle errors using your error handler
