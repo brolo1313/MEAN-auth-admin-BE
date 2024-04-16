@@ -10,6 +10,7 @@ router.get("/api/getAllUsers", getUsers);
 router.post(
   "/api/sign-up",
   verifySignUp.checkDuplicateUsernameOrEmail,
+  verifySignUp.checkValidation,
   signUp
 );
 

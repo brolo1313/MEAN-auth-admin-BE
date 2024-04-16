@@ -50,7 +50,7 @@ const signIn = (req, res) => {
   })
     .then((user) => {
       if (!user) {
-        return res.status(404).send({ message: "User Not found." });
+        return res.status(400).send({ message: "User Not found." });
       }
 
       const passwordIsValid = bcrypt.compareSync(
@@ -59,7 +59,7 @@ const signIn = (req, res) => {
       );
 
       if (!passwordIsValid) {
-        return res.status(401).send({
+        return res.status(400).send({
           accessToken: null,
           message: "Invalid Password!",
         });
