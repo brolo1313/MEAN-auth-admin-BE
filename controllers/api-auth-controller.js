@@ -4,7 +4,7 @@ const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 
 const expiresIn = 3600;
-const secretKey = process.env.SECRET_KEY || 'default-secret-key';
+const secretKey = process.env.SECRET_KEY || "default-secret-key";
 
 const errorHandler = (res, error) =>
   res.status(500).json({
@@ -15,7 +15,7 @@ const errorHandler = (res, error) =>
     },
   });
 
-const nativeError = (res, error) => res.status(500).json(error);
+const nativeError = (res, error) => res.status(500).json({ message: error });
 
 const getUsers = (req, res) => {
   User.find()
@@ -44,47 +44,52 @@ const signUp = (req, res) => {
     });
 };
 
-const signIn = (req, res) => {
-  User.findOne({
-    username: req.body.username,
-  })
-    .then((user) => {
-      if (!user) {
-        return res.status(400).send({ message: "User Not found." });
-      }
+const signIn = async (req, res) => {
+  const { username, password } = req.body;
 
-      const passwordIsValid = bcrypt.compareSync(
-        req.body.password,
-        user.password
-      );
+  if (!username || !password) {
+    return res
+      .status(400)
+      .json({ message: "Username and password are required" });
+  }
 
-      if (!passwordIsValid) {
-        return res.status(400).send({
-          accessToken: null,
-          message: "Invalid Password!",
-        });
-      }
-
-      console.log('process.env', process.env);
-      const token = jwt.sign({ id: user.id }, secretKey, {
-        algorithm: "HS256",
-        allowInsecureKeySizes: true,
-        expiresIn: expiresIn, 
+  try {
+    const user = await User.findOne({ username });
+    // Check if the user exists and has a password
+    if (!user || !user.password) {
+      return res.status(400).send({
+        accessToken: null,
+        message: "Invalid login or password",
       });
+    }
 
-      res.status(200).send({
-        id: user._id,
-        username: user.username,
-        email: user.email,
-        roles: user.roles,
-        accessToken: token,
-        expiresIn,
+    const isPasswordValid = bcrypt.compareSync(password, user.password);
+
+    if (!isPasswordValid) {
+      return res.status(400).send({
+        accessToken: null,
+        message: "Invalid login or password",
       });
-    })
-    .catch((error) => {
-      nativeError(res, error);
-      console.log('error', error);
+    }
+
+    const token = jwt.sign({ id: user.id }, secretKey, {
+      algorithm: "HS256",
+      allowInsecureKeySizes: true,
+      expiresIn: expiresIn,
     });
+
+    res.status(200).send({
+      id: user._id,
+      username: user.username,
+      email: user.email,
+      roles: user.roles,
+      accessToken: token,
+      expiresIn,
+    });
+  } catch (error) {
+    console.error("Error in signIn function:", error);
+    return nativeError(res, error);
+  }
 };
 
 module.exports = {
