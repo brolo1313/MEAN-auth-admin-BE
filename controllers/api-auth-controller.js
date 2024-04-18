@@ -4,6 +4,7 @@ const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 
 const expiresIn = 3600;
+const secretKey = process.env.SECRET_KEY || 'default-secret-key';
 
 const errorHandler = (res, error) =>
   res.status(500).json({
@@ -64,7 +65,8 @@ const signIn = (req, res) => {
         });
       }
 
-      const token = jwt.sign({ id: user.id }, process.env.SECRET_KEY, {
+      console.log('process.env', process.env);
+      const token = jwt.sign({ id: user.id }, secretKey, {
         algorithm: "HS256",
         allowInsecureKeySizes: true,
         expiresIn, 
