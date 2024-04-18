@@ -1,28 +1,29 @@
-//Verify Token
+const jwt = require("jsonwebtoken");
+
 const verify = (req, res, next) => {
-  try {
-    const bearerHeader = req.headers["authorization"];
-    if(!bearerHeader) {
-        return res.status(401).send({ message: 'You are unauthorized' });
-    }
-    if (typeof bearerHeader !== "undefined") {
-      const bearer = bearerHeader.split(" ");
-      //Get token from string
-      const bearerToken = bearer[1];
+  const bearerHeader = req.headers["authorization"];
 
-      //set the token
-      req.token = bearerToken;
-
-      //next middleweare
-      next();
-    }
-  } catch (err) {
-    res.status(500).send({ message: err.message });
+  if (!bearerHeader || !bearerHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ message: "Unauthorized access" });
   }
+
+  const token = bearerHeader.split(" ")[1];
+
+  jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ message: "Invalid token" });
+    }
+
+    // Attach the decoded token to the request object
+    req.decoded = decoded;
+
+    // Proceed to the next middleware function
+    next();
+  });
 };
 
 const bearerToken = {
-    verify,
+  verify,
 };
 
 module.exports = bearerToken;

@@ -1,10 +1,9 @@
 const bcrypt = require("bcryptjs");
 
 const User = require("../models/user");
-const { verifySignUp } = require("../middlewares");
 const jwt = require("jsonwebtoken");
 
-const secret = "test-secret-key"
+const expiresIn = 3600;
 
 const errorHandler = (res, error) =>
   res.status(500).json({
@@ -65,10 +64,10 @@ const signIn = (req, res) => {
         });
       }
 
-      const token = jwt.sign({ id: user.id }, secret, {
+      const token = jwt.sign({ id: user.id }, process.env.SECRET_KEY, {
         algorithm: "HS256",
         allowInsecureKeySizes: true,
-        expiresIn: 60, 
+        expiresIn, 
       });
 
       res.status(200).send({
@@ -77,6 +76,7 @@ const signIn = (req, res) => {
         email: user.email,
         roles: user.roles,
         accessToken: token,
+        expiresIn,
       });
     })
     .catch((error) => {
