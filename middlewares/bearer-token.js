@@ -4,7 +4,7 @@ const verify = (req, res, next) => {
   const bearerHeader = req.headers["authorization"];
 
   if (!bearerHeader || !bearerHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ message: "Unauthorized access" });
+    return res.status(401).json({ message: "Unauthorized,access denied" });
   }
 
   const token = bearerHeader.split(" ")[1];
