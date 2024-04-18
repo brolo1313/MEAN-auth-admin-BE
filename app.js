@@ -47,8 +47,7 @@ app.use(express.static(path.join(__dirname, "styles")));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json()); // Parse JSON request body
 
-//ROUTES
-// app.use(homeRoutes);
+
 //API
 app.use(apiPlanRoutes);
 app.use(apiAuthRoutes);
