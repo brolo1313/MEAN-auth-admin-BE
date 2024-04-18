@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-
+const secretKey = process.env.SECRET_KEY || 'default-secret-key';
 const verify = (req, res, next) => {
   const bearerHeader = req.headers["authorization"];
 
@@ -9,7 +9,7 @@ const verify = (req, res, next) => {
 
   const token = bearerHeader.split(" ")[1];
 
-  jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
+  jwt.verify(token, secretKey, (err, decoded) => {
     if (err) {
       return res.status(401).json({ message: "Invalid token" });
     }
