@@ -69,7 +69,7 @@ const signIn = (req, res) => {
       const token = jwt.sign({ id: user.id }, secretKey, {
         algorithm: "HS256",
         allowInsecureKeySizes: true,
-        expiresIn, 
+        expiresIn: expiresIn, 
       });
 
       res.status(200).send({
