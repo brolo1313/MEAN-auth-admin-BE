@@ -3,7 +3,7 @@ const router = express.Router();
 const { verifySignUp } = require("../middlewares");
 const { bearerToken } = require("../middlewares");
 
-const { getUsers, signUp, signIn } = require("../controllers/api-auth-controller");
+const { getUsers, signUp, signIn, resetPassword } = require("../controllers/api-auth-controller");
 
 
 router.get("/api/getAllUsers", bearerToken.verify, getUsers);
@@ -16,5 +16,7 @@ router.post(
 );
 
 router.post("/api/sign-in", signIn);
+
+router.post("/api/reset-password", resetPassword)
 
 module.exports = router;

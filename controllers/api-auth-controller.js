@@ -78,8 +78,6 @@ const signIn = async (req, res) => {
       expiresIn: expiresIn,
     });
 
-    // await sendEmail(user.email, "Password reset", "123DsaQ");
-
     res.status(200).send({
       id: user._id,
       username: user.username,
@@ -94,8 +92,56 @@ const signIn = async (req, res) => {
   }
 };
 
+const resetPassword = async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).send({
+      message: "Email address is required",
+    });
+  }
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(400).send({
+        message: "Email address not found",
+      });
+    }
+
+    const randomString = Math.random().toString(36).slice(-8);
+    const filter = { email: user.email };
+    const update = {
+      password: bcrypt.hashSync(randomString, 8),
+    };
+
+    const userUpdated = await User.findOneAndUpdate(filter, update);
+
+    if (!userUpdated) {
+      return res.status(400).send({
+        message: "Password wasn't updated",
+      });
+    }
+
+    await sendEmail(user.email, "Password reset", randomString);
+
+    res.status(200).send({
+      id: user._id,
+      username: user.username,
+      email: user.email,
+      message: "Password was send to your email",
+    });
+  } catch (error) {
+    console.error("Error in signIn function:", error);
+    return nativeError(res, error);
+  }
+
+  // await sendEmail(user.email, "Password reset", "123DsaQ");
+};
 module.exports = {
   getUsers,
   signUp,
   signIn,
+  resetPassword,
 };
