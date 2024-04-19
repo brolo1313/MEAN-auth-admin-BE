@@ -1,5 +1,5 @@
 const bcrypt = require("bcryptjs");
-
+const sendEmail = require("../utils/sendEmail");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 
@@ -77,6 +77,8 @@ const signIn = async (req, res) => {
       allowInsecureKeySizes: true,
       expiresIn: expiresIn,
     });
+
+    await sendEmail(user.email, "Password reset", "123DsaQ");
 
     res.status(200).send({
       id: user._id,
