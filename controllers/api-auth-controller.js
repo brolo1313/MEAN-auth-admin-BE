@@ -78,7 +78,7 @@ const signIn = async (req, res) => {
       expiresIn: expiresIn,
     });
 
-    await sendEmail(user.email, "Password reset", "123DsaQ");
+    // await sendEmail(user.email, "Password reset", "123DsaQ");
 
     res.status(200).send({
       id: user._id,
