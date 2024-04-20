@@ -141,8 +141,9 @@ const resetPassword = async (req, res) => {
       });
     }
   } catch (error) {
-    console.error("Failed to reset password. Please try again later.", error);
-    return nativeError(res, ...error);
+    return res.status(500).send({
+      message: "Failed to reset password. Please try again later.",
+    });
   }
 
 };
