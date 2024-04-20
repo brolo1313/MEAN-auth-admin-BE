@@ -36,10 +36,8 @@ const sendEmail = async (email, subject, newPass) => {
     return true;
 
   } catch (error) {
-    return res.status(500).send({
-      ...error,
-      message: "Email wasn't sent",
-    });
+    console.error("Error sending email:", error);
+    throw new Error("Email sending failed");
   }
 };
 

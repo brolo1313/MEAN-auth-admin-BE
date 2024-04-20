@@ -141,11 +141,10 @@ const resetPassword = async (req, res) => {
       });
     }
   } catch (error) {
-    console.error("Error in signIn function:", error);
+    console.error("Failed to reset password. Please try again later.", error);
     return nativeError(res, error);
   }
 
-  // await sendEmail(user.email, "Password reset", "123DsaQ");
 };
 module.exports = {
   getUsers,
