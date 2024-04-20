@@ -32,6 +32,9 @@ const sendEmail = async (email, subject, newPass) => {
     });
 
     console.log("email sent sucessfully");
+
+    return true;
+
   } catch (error) {
     return res.status(500).send({
       ...error,

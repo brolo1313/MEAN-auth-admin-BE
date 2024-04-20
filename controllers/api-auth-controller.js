@@ -124,14 +124,22 @@ const resetPassword = async (req, res) => {
       });
     }
 
-    await sendEmail(user.email, "Password reset", randomString);
+    const isSentEmail = await sendEmail(
+      user.email,
+      "Password reset",
+      randomString
+    );
 
-    res.status(200).send({
-      id: user._id,
-      username: user.username,
-      email: user.email,
-      message: "Password was send to your email",
-    });
+    console.log("isSentEmail", isSentEmail);
+
+    if (isSentEmail) {
+      res.status(200).send({
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        message: "Password was send to your email",
+      });
+    }
   } catch (error) {
     console.error("Error in signIn function:", error);
     return nativeError(res, error);
