@@ -40,7 +40,9 @@ const updateProfilePassword = async (req, res) => {
 
     return res.status(200).send({
       message: "Password updated successfully",
-      user,
+      username: user.username,
+      email: user.email,
+      role: user.role
     });
    
   } catch (error) {
