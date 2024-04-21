@@ -12,6 +12,8 @@ app.use(cors());
 
 const apiPlanRoutes = require("./routes/api-plan-routes");
 const apiAuthRoutes = require("./routes/api-auth-routes");
+const apiProfileRoutes = require("./routes/api-profile-routes");
+
 const Role = require("./models/role");
 
 const errorMsg = chalk.bgKeyword("white").redBright;
@@ -51,5 +53,7 @@ app.use(express.json()); // Parse JSON request body
 //API
 app.use(apiPlanRoutes);
 app.use(apiAuthRoutes);
+app.use(apiProfileRoutes);
+
 
 module.exports = app;
