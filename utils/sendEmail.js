@@ -1,6 +1,6 @@
 const nodemailer = require("nodemailer");
 
-const sendEmail = async (email, subject, newPass) => {
+const sendEmail = async (email, subject, newPass, username) => {
   try {
     const transporter = nodemailer.createTransport({
       host: process.env.HOST_EMAIL,
@@ -19,7 +19,7 @@ const sendEmail = async (email, subject, newPass) => {
       subject: subject,
       // text: text,
       html: `
-            <h1>Hello UserName!</h1>
+            <h1>Hello, ${username}!</h1>
             <p>This is a your new password: 
             <span 
             style="background-color: antiquewhite;

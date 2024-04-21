@@ -127,7 +127,8 @@ const resetPassword = async (req, res) => {
     const isSentEmail = await sendEmail(
       user.email,
       "Password reset",
-      randomString
+      randomString,
+      user.username,
     );
 
     console.log("isSentEmail", isSentEmail);
