@@ -20,7 +20,12 @@ const nativeError = (res, error) => res.status(500).json({ message: error });
 const getUsers = (req, res) => {
   User.find()
     .then((users) => {
-      res.status(200).json(users);
+      const usersWithoutPassword = users.map(user => {
+        const { password, __v, email, ...userWithoutPassword } = user.toObject();
+        return userWithoutPassword;
+      });
+      
+      res.status(200).json(usersWithoutPassword);
     })
     .catch((error) => {
       errorHandler(res);
