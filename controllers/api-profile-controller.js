@@ -1,5 +1,6 @@
-const User = require("../models/user");
 const bcrypt = require("bcryptjs");
+const Profile = require("../models/profile");
+
 
 const updateProfilePassword = async (req, res) => {
   const { oldPassword, newPassword, confirmPassword } = req.body;
@@ -52,6 +53,24 @@ const updateProfilePassword = async (req, res) => {
   }
 };
 
+const nativeError = (res, error) => res.status(500).json({ message: error.message || 'Internal server error' });
+
+const getAllProfiles = (req, res) => {
+  Profile.find()
+    .then((users) => {
+      // const usersWithoutPassword = users.map((user) => {
+      //   const { password, __v, email, ...userWithoutPassword } =
+      //     user.toObject();
+      //   return userWithoutPassword;
+      // });
+
+      res.status(200).json(users);
+    })
+    .catch((error) => {
+      return nativeError(res,error)
+    });
+};
 module.exports = {
   updateProfilePassword,
+  getAllProfiles,
 };

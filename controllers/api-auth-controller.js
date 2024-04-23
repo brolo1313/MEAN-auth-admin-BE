@@ -35,7 +35,7 @@ const getUsers = (req, res) => {
 };
 
 const signUp = async (req, res) => {
-  const { username, email, password, role = "admin" } = req.body;
+  const { username, email, password, role = "user" } = req.body;
 
   const user = new User({
     username,
@@ -58,6 +58,7 @@ const signUp = async (req, res) => {
       name: username,
       title: '',
       bio: '',
+      role: createdUser.role,
       profilePics: "",
       links: {
         website: "",

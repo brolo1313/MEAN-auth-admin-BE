@@ -13,6 +13,9 @@ const profileSchema = new Schema({
         trim: true,
         required: true
     },
+    role: {
+        type: String,
+      },
     title: {
         type: String,
         trim: true,
