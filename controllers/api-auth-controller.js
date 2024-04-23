@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const sendEmail = require("../utils/sendEmail");
 const User = require("../models/user");
+const Profile = require("../models/profile");
 const jwt = require("jsonwebtoken");
 
 const expiresIn = 3600;
@@ -15,16 +16,17 @@ const errorHandler = (res, error) =>
     },
   });
 
-const nativeError = (res, error) => res.status(500).json({ message: error });
+const nativeError = (res, error) => res.status(500).json({ message: error.message || 'Internal server error' });
 
 const getUsers = (req, res) => {
   User.find()
     .then((users) => {
-      const usersWithoutPassword = users.map(user => {
-        const { password, __v, email, ...userWithoutPassword } = user.toObject();
+      const usersWithoutPassword = users.map((user) => {
+        const { password, __v, email, ...userWithoutPassword } =
+          user.toObject();
         return userWithoutPassword;
       });
-      
+
       res.status(200).json(usersWithoutPassword);
     })
     .catch((error) => {
@@ -32,7 +34,7 @@ const getUsers = (req, res) => {
     });
 };
 
-const signUp = (req, res) => {
+const signUp = async (req, res) => {
   const { username, email, password, role = "admin" } = req.body;
 
   const user = new User({
@@ -41,12 +43,49 @@ const signUp = (req, res) => {
     password: bcrypt.hashSync(password, 8),
     role,
   });
-  user
-    .save()
-    .then((createdUser) => res.status(200).json(createdUser))
-    .catch((error) => {
-      nativeError(res, error);
+
+  try {
+    const createdUser = await user.save();
+
+    if (!createdUser) {
+      return res.status(400).send({
+        message: "Couldn't write user in DB",
+      });
+    }
+
+    const profile = new Profile({
+      user: createdUser._id,
+      name: username,
+      title: '',
+      bio: '',
+      profilePics: "",
+      links: {
+        website: "",
+        facebook: "",
+        twitter: "",
+        github: "",
+      },
+      posts: [],
     });
+
+    const createdProfile = await profile.save();
+
+    if (!createdProfile) {
+      return res.status(400).send({
+        message: "Couldn't write profile in DB",
+      });
+    }
+
+    await User.findOneAndUpdate(
+      { _id: createdUser._id },
+      { $set: { profile: createdProfile._id } }
+  )
+
+    res.status(200).json(createdUser);
+  } catch (error) {
+    console.log('error',error);
+    return nativeError(res, error);
+  }
 };
 
 const signIn = async (req, res) => {
@@ -133,7 +172,7 @@ const resetPassword = async (req, res) => {
       user.email,
       "Password reset",
       randomString,
-      user.username,
+      user.username
     );
 
     console.log("isSentEmail", isSentEmail);
@@ -151,7 +190,6 @@ const resetPassword = async (req, res) => {
       message: "Failed to reset password. Please try again later.",
     });
   }
-
 };
 module.exports = {
   getUsers,

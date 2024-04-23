@@ -25,6 +25,10 @@ const userSchema = new Schema(
       enum: ["user", "admin"],
       default: "user",
     },
+    profile: {
+      type: Schema.Types.ObjectId,
+      ref: 'Profile'
+  },
   },
   { timestamps: true }
 );
