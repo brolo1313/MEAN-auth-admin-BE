@@ -8,13 +8,16 @@ const cors = require("cors");
 
 const dotenv = require("dotenv").config();
 
-app.use(cors());
+const corsOptions = {
+  origin: ['http://localhost:4202', 'https://mean-sand-box-fe.vercel.app']
+};
+
+app.use(cors(corsOptions));
 
 const apiPlanRoutes = require("./routes/api-plan-routes");
 const apiAuthRoutes = require("./routes/api-auth-routes");
 const apiProfileRoutes = require("./routes/api-profile-routes");
 
-const Role = require("./models/role");
 
 const errorMsg = chalk.bgKeyword("white").redBright;
 const successMsg = chalk.bgKeyword("green").white;
