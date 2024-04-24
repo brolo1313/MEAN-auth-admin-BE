@@ -5,7 +5,10 @@ const planSchema = new Schema(
   {
     id: Number,
     logoImage: String,
-    title: String,
+    title: {
+      type: String,
+      required: [true, "A plan must have a title"],
+    },
     details: String,
     coverImage: String,
     link: String

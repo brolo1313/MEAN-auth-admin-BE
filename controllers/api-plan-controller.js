@@ -1,18 +1,8 @@
 const Plan = require("../models/plan");
 const Profile = require("../models/profile");
+const nativeError  = require("../helpers/errors");
 
-const errorHandler = (res) =>
-  res.status(500).json({
-    app_err_default: {
-      notification: "Помилка сервера",
-      code: 10000,
-      message: "Default Error",
-    },
-  });
-
-const nativeError = (res, error) =>
-  res.status(500).json({ message: error.message || "Internal server error" });
-
+//MAIN LOGIC
 const getPlans = (req, res) => {
   Plan.find()
     .then((plans) => {
@@ -25,7 +15,7 @@ const getPlans = (req, res) => {
       res.status(200).json(modifiedPlans);
     })
     .catch((error) => {
-      errorHandler(res);
+      return nativeError(res, error);
     });
 };
 
@@ -35,16 +25,36 @@ const createPlan = async (req, res) => {
   const plan = new Plan({ title, details, link, coverImage, logoImage });
 
   try {
-    const createPlan = await plan.save();
+    const newPlan = await planSave(plan);
+    createdPlanId = newPlan._id;
+    const updateProfile = await profileUpdate(authorId, newPlan);
 
-    await Profile.findOneAndUpdate(
-      { user: authorId },
-      { $push: { posts: createPlan } }
-    );
-
-    res.status(200).json(createPlan);
+    res.status(200).json(newPlan);
   } catch (error) {
-    return nativeError(res, error);
+    if (error instanceof CustomError) {
+      if (error.code === 1100) {
+        await Plan.deleteOne({ _id: createdPlanId });
+        res.status(400).json({
+          message: error.message,
+          error: error.cause,
+          code: error.code,
+        });
+      }
+
+      if (error.code === 1201) {
+        res.status(400).json({
+          message: error.message,
+          error: error.cause,
+          code: error.code,
+        });
+      }
+    } else {
+      return nativeError(
+        res,
+        error,
+        "An error occurred while creating a plan."
+      );
+    }
   }
 };
 
@@ -65,10 +75,8 @@ const updatePlan = (req, res) => {
   )
     .then((updatedPlan) => {
       if (!updatedPlan) {
-        // If the plan with the given id is not found, return a 404 response
         return res.status(404).json({ message: "Plan not found" });
       }
-      // Destructure _id and the rest of the properties from updatedPlan
       const { _id, ...restOfPlan } = updatedPlan.toObject();
 
       // Rename _id to id
@@ -80,34 +88,88 @@ const updatePlan = (req, res) => {
       res.status(200).json(planWithId);
     })
     .catch((error) => {
-      // Handle errors using your error handler
-      errorHandler(res, error);
+      return nativeError(
+        res,
+        error,
+        "An error occurred while updating a plan."
+      );
     });
 };
 
 const deletePlan = async (req, res) => {
-
   try {
+    deletedPost = await Plan.findById(req.params.id);
     const post = await Plan.findByIdAndDelete(req.params.id);
 
-    if (!post) {
+    if (!post || !deletedPost) {
       return nativeError(res, error);
     }
 
-    await Profile.findOneAndUpdate(
-      { user: req.query.authorId },
-      { $pull: { posts: req.params.id } },
-      { new: true } // To return the updated document after removal
-    );
+    await removePostFromProfile(req.query.authorId, req.params.id);
 
     res.status(200).json({
       id: req.params.id,
       message: "Plan deleted successfully",
     });
   } catch (error) {
-    return nativeError(res, error);
+    if (error instanceof CustomError) {
+      if (error.code === 1203) {
+        await Plan.create(deletedPost);
+
+        res.status(500).json({
+          message: error.message,
+          error: error.cause,
+          code: error.code,
+        });
+      }
+    } else {
+      return nativeError(
+        res,
+        error,
+        "An error occurred while deleting a plan."
+      );
+    }
   }
 };
+
+//HELPERS
+async function planSave(plan) {
+  try {
+    const newPlan = await plan.save();
+    return newPlan;
+  } catch (error) {
+    throw new CustomError("Couldn't save plan", 1201, error.errors.title.message);
+  }
+}
+async function profileUpdate(authorId, createdPlan) {
+  try {
+    await Profile.findOneAndUpdate(
+      { user: authorId },
+      { $push: { posts: createdPlan } }
+    );
+  } catch (error) {
+    throw new CustomError(
+      "Failed to update profile. Plan creation rolled back.",
+      1100,
+      error
+    );
+  }
+}
+async function removePostFromProfile(authorId, postId) {
+  try {
+    await Profile.findOneAndUpdate(
+      { user: authorId },
+      { $pull: { posts: postId } },
+      { new: true } // To return the updated document after removal
+    );
+  } catch (error) {
+    throw new CustomError(
+      "Failed to remove post in profile. Plan delete rolled back.",
+      1203,
+      error
+    );
+  }
+}
 
 module.exports = {
   getPlans,
@@ -115,3 +177,13 @@ module.exports = {
   updatePlan,
   deletePlan,
 };
+
+class CustomError extends Error {
+  constructor(message, code = "0000", cause = "Error") {
+    super(message);
+    this.name = this.constructor.name;
+    this.code = code;
+    this.cause = cause;
+    Error.captureStackTrace(this, this.constructor);
+  }
+}
