@@ -82,9 +82,9 @@ const updatePlan = (req, res) => {
 
 const deletePlan = async (req, res, next) => {
   try {
-    post = await planFind(req.params.id);
+    post = await planFind(req?.params?.id);
 
-    const deletedPost = await planDelete(post.data._id);
+    const deletedPost = await planDelete(post?.data?._id);
 
     if (post.error || deletedPost.error) {
       throw new AppError(

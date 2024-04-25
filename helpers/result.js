@@ -1,3 +1,5 @@
+
+//what for:  clear success and fail lanes, and more specific error shout-outs! 
 class Result {
     constructor(success, data, error) {
        this.success = success;
