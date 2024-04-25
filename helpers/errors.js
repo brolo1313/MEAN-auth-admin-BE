@@ -3,4 +3,21 @@ const nativeError = (res, error, msg) =>
     .status(500)
     .json({ message: msg, error: error?.message || "Internal server error" });
 
-module.exports = nativeError;
+// Custom Error class
+class AppError extends Error {
+  constructor(message, statusCode, errorCode, originalError) {
+    super(message);
+
+    this.statusCode = statusCode;
+    this.code = errorCode || null  ;
+    this.name = this.constructor.name;
+    this.originalError = originalError;
+
+    Error.captureStackTrace(this, this.constructor);
+  }
+}
+
+module.exports = {
+  nativeError,
+  AppError,
+};

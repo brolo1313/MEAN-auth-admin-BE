@@ -1,60 +1,51 @@
 const Plan = require("../models/plan");
 const Profile = require("../models/profile");
-const nativeError  = require("../helpers/errors");
+const { AppError } = require("../helpers/errors");
+const Result = require("../helpers/result");
 
 //MAIN LOGIC
-const getPlans = (req, res) => {
+const getPlans = (req, res, next) => {
   Plan.find()
     .then((plans) => {
-      // Modify each plan object to change '_id' to 'id'
       const modifiedPlans = plans.map((plan) => {
         const modifiedPlan = { ...plan.toObject(), id: plan._id };
-        delete modifiedPlan._id; // Remove the original '_id' field
+        delete modifiedPlan._id;
         return modifiedPlan;
       });
       res.status(200).json(modifiedPlans);
     })
     .catch((error) => {
-      return nativeError(res, error);
+      next(error);
     });
 };
 
-const createPlan = async (req, res) => {
+const createPlan = async (req, res, next) => {
   const { title, details, link, coverImage, logoImage, authorId } = req.body;
 
   const plan = new Plan({ title, details, link, coverImage, logoImage });
 
   try {
     const newPlan = await planSave(plan);
-    createdPlanId = newPlan._id;
-    const updateProfile = await profileUpdate(authorId, newPlan);
+    if (newPlan.error) {
+      throw new AppError("Couldn't save plan", 500, 1201, newPlan.error);
+    }
+    createdPlanId = newPlan.data._id;
+    const updateProfile = await profileUpdate(authorId, newPlan.data);
 
-    res.status(200).json(newPlan);
-  } catch (error) {
-    if (error instanceof CustomError) {
-      if (error.code === 1100) {
-        await Plan.deleteOne({ _id: createdPlanId });
-        res.status(400).json({
-          message: error.message,
-          error: error.cause,
-          code: error.code,
-        });
-      }
-
-      if (error.code === 1201) {
-        res.status(400).json({
-          message: error.message,
-          error: error.cause,
-          code: error.code,
-        });
-      }
-    } else {
-      return nativeError(
-        res,
-        error,
-        "An error occurred while creating a plan."
+    if (updateProfile.error) {
+      console.log('updateProfile', updateProfile);
+      await Plan.deleteOne({ _id: createdPlanId });
+      throw new AppError(
+        "Failed to update profile. Plan creation rolled back.",
+        500,
+        1100,
+        updateProfile.error
       );
     }
+
+    res.status(200).json(newPlan.data);
+  } catch (error) {
+    next(error);
   }
 };
 
@@ -74,9 +65,6 @@ const updatePlan = (req, res) => {
     options
   )
     .then((updatedPlan) => {
-      if (!updatedPlan) {
-        return res.status(404).json({ message: "Plan not found" });
-      }
       const { _id, ...restOfPlan } = updatedPlan.toObject();
 
       // Rename _id to id
@@ -88,47 +76,49 @@ const updatePlan = (req, res) => {
       res.status(200).json(planWithId);
     })
     .catch((error) => {
-      return nativeError(
-        res,
-        error,
-        "An error occurred while updating a plan."
-      );
+      next(error);
     });
 };
 
-const deletePlan = async (req, res) => {
+const deletePlan = async (req, res, next) => {
   try {
-    deletedPost = await Plan.findById(req.params.id);
-    const post = await Plan.findByIdAndDelete(req.params.id);
+    post = await planFind(req.params.id);
 
-    if (!post || !deletedPost) {
-      return nativeError(res, error);
+    const deletedPost = await planDelete(post.data._id);
+
+    if (post.error || deletedPost.error) {
+      throw new AppError(
+        "An error occurred while deleting a plan.",
+        500,
+        1204,
+        post.error ?? deletedPost.error
+      );
     }
+    const removedPostFromProfile = await removePostFromProfile(
+      req.query.authorId,
+      req.params.id
+    );
 
-    await removePostFromProfile(req.query.authorId, req.params.id);
+    if (removedPostFromProfile.error) {
+      let newPost = { ...post.data };
+
+      delete newPost._doc._id;
+
+      await Plan.create(newPost._doc);
+      throw new AppError(
+        "Failed to remove post in profile. Plan delete rolled back.",
+        500,
+        1203,
+        removedPostFromProfile.error
+      );
+    }
 
     res.status(200).json({
       id: req.params.id,
       message: "Plan deleted successfully",
     });
   } catch (error) {
-    if (error instanceof CustomError) {
-      if (error.code === 1203) {
-        await Plan.create(deletedPost);
-
-        res.status(500).json({
-          message: error.message,
-          error: error.cause,
-          code: error.code,
-        });
-      }
-    } else {
-      return nativeError(
-        res,
-        error,
-        "An error occurred while deleting a plan."
-      );
-    }
+    next(error);
   }
 };
 
@@ -136,38 +126,48 @@ const deletePlan = async (req, res) => {
 async function planSave(plan) {
   try {
     const newPlan = await plan.save();
-    return newPlan;
+    return Result.Success(newPlan);
   } catch (error) {
-    throw new CustomError("Couldn't save plan", 1201, error.errors.title.message);
+    return Result.Fail(error);
   }
 }
 async function profileUpdate(authorId, createdPlan) {
   try {
-    await Profile.findOneAndUpdate(
+    const updatedPlan = await Profile.findOneAndUpdate(
       { user: authorId },
       { $push: { posts: createdPlan } }
     );
+    return Result.Success(updatedPlan);
   } catch (error) {
-    throw new CustomError(
-      "Failed to update profile. Plan creation rolled back.",
-      1100,
-      error
-    );
+    return Result.Fail(error);
   }
 }
 async function removePostFromProfile(authorId, postId) {
   try {
-    await Profile.findOneAndUpdate(
+    const data = await Profile.findOneAndUpdate(
       { user: authorId },
       { $pull: { posts: postId } },
       { new: true } // To return the updated document after removal
     );
+    return Result.Success(data);
   } catch (error) {
-    throw new CustomError(
-      "Failed to remove post in profile. Plan delete rolled back.",
-      1203,
-      error
-    );
+    return Result.Fail(error);
+  }
+}
+async function planFind(planId) {
+  try {
+    const data = await Plan.findById(planId);
+    return Result.Success(data);
+  } catch (error) {
+    return Result.Fail(error);
+  }
+}
+async function planDelete(planId) {
+  try {
+    const data = await Plan.findByIdAndDelete(planId);
+    return Result.Success(data);
+  } catch (error) {
+    return Result.Fail(error);
   }
 }
 
@@ -177,13 +177,3 @@ module.exports = {
   updatePlan,
   deletePlan,
 };
-
-class CustomError extends Error {
-  constructor(message, code = "0000", cause = "Error") {
-    super(message);
-    this.name = this.constructor.name;
-    this.code = code;
-    this.cause = cause;
-    Error.captureStackTrace(this, this.constructor);
-  }
-}

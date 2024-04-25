@@ -45,4 +45,20 @@ app.use(apiPlanRoutes);
 app.use(apiAuthRoutes);
 app.use(apiProfileRoutes);
 
+// 👇 add a global error handler after all the routes.
+app.use((err, req, res, next) => {
+  err.statusCode = err?.statusCode || 500;
+  err.code = err?.code || null;
+  err.originalError = err?.originalError || 'Internal Server Error';
+
+  const errorResponse = {
+    status: err.statusCode,
+    code: err.code,
+    message: err.message,
+    originalError: err.originalError
+  };
+
+  res.status(err.statusCode).json(errorResponse);
+});
+
 module.exports = app;
