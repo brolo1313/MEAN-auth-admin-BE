@@ -1,18 +1,21 @@
 const bcrypt = require("bcryptjs");
 const Profile = require("../models/profile");
+const User = require("../models/user");
+const { AppError } = require("../helpers/errors");
 
-
-const updateProfilePassword = async (req, res) => {
+const updateProfilePassword = async (req, res, next) => {
   const { oldPassword, newPassword, confirmPassword } = req.body;
-  const { id } = req.params;
+  const { id } = req.query;
 
   try {
-    const user = await User.findOne(id);
+    const user = await User.findById(id);
 
     if (!user) {
-      return res.status(400).send({
-        message: "Couldn't find user",
-      });
+      throw new AppError(
+        "Couldn't find user",
+        500,
+        1000,
+      );
     }
 
     const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
@@ -47,27 +50,18 @@ const updateProfilePassword = async (req, res) => {
     });
    
   } catch (error) {
-    return res.status(500).send({
-      message: error,
-    });
+    next(error);
   }
 };
 
-const nativeError = (res, error) => res.status(500).json({ message: error.message || 'Internal server error' });
 
-const getAllProfiles = (req, res) => {
+const getAllProfiles = (req, res, next) => {
   Profile.find()
     .then((users) => {
-      // const usersWithoutPassword = users.map((user) => {
-      //   const { password, __v, email, ...userWithoutPassword } =
-      //     user.toObject();
-      //   return userWithoutPassword;
-      // });
-
       res.status(200).json(users);
     })
     .catch((error) => {
-      return nativeError(res,error)
+      next(error);
     });
 };
 module.exports = {

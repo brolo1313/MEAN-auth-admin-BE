@@ -5,7 +5,7 @@ const nativeError = (res, error, msg) =>
 
 // Custom Error class
 class AppError extends Error {
-  constructor(message, statusCode, errorCode, originalError) {
+  constructor(message, statusCode, errorCode, originalError = '') {
     super(message);
 
     this.statusCode = statusCode;
