@@ -11,10 +11,24 @@ const planSchema = new Schema(
     },
     details: String,
     coverImage: String,
-    link: String
-  }
+    link: String,
+
+    plan_manager : {
+      type      : mongoose.Schema.Types.ObjectId,
+      ref       : 'User',
+      required  : true,
+      immutable : true 
+    },
+  },
+  
 );
 
+// planSchema.pre("deleteOne", async function (next) {
+  
+//   console.log('delete middleware');
+
+//   next();
+// });
 
 
 

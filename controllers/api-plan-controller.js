@@ -24,6 +24,7 @@ const createPlan = async (req, res, next) => {
   const { title, details, link, coverImage, logoImage, authorId } = req.body;
 
   const plan = new Plan({ title, details, link, coverImage, logoImage });
+  plan.plan_manager = authorId;
 
   try {
     const newPlan = await save(plan);
@@ -43,7 +44,7 @@ const createPlan = async (req, res, next) => {
         updateProfile.error
       );
     }
-
+    
     res.status(200).json(newPlan.data);
   } catch (error) {
     next(error);
@@ -82,8 +83,18 @@ const updatePlan = (req, res) => {
 };
 
 const deletePlan = async (req, res, next) => {
+  const authorId = req.query.authorId;
   try {
     post = await findById(req?.params?.id, Plan);
+
+    if(post?.data?.plan_manager?.toString() != authorId?.toString() && post?.data?.plan_manager) {
+      throw new AppError(
+        "You can\'t delete this plan.",
+        400,
+        1206,
+        error = 'Plan permission denied. You can delete only your own plan.'
+      );
+    } 
 
     const deletedPost = await deleteById(post?.data?._id, Plan);
 
