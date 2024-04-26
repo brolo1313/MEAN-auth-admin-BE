@@ -2,6 +2,7 @@ const Plan = require("../models/plan");
 const Profile = require("../models/profile");
 const { AppError } = require("../helpers/errors");
 const Result = require("../helpers/result");
+const { findById, deleteById, save } = require("../helpers/default-db-actions");
 
 //MAIN LOGIC
 const getPlans = (req, res, next) => {
@@ -25,7 +26,7 @@ const createPlan = async (req, res, next) => {
   const plan = new Plan({ title, details, link, coverImage, logoImage });
 
   try {
-    const newPlan = await planSave(plan);
+    const newPlan = await save(plan);
     if (newPlan.error) {
       throw new AppError("Couldn't save plan", 500, 1201, newPlan.error);
     }
@@ -33,7 +34,7 @@ const createPlan = async (req, res, next) => {
     const updateProfile = await profileUpdate(authorId, newPlan.data);
 
     if (updateProfile.error) {
-      console.log('updateProfile', updateProfile);
+      console.log("updateProfile", updateProfile);
       await Plan.deleteOne({ _id: createdPlanId });
       throw new AppError(
         "Failed to update profile. Plan creation rolled back.",
@@ -82,9 +83,9 @@ const updatePlan = (req, res) => {
 
 const deletePlan = async (req, res, next) => {
   try {
-    post = await planFind(req?.params?.id);
+    post = await findById(req?.params?.id, Plan);
 
-    const deletedPost = await planDelete(post?.data?._id);
+    const deletedPost = await deleteById(post?.data?._id, Plan);
 
     if (post.error || deletedPost.error) {
       throw new AppError(
@@ -123,14 +124,7 @@ const deletePlan = async (req, res, next) => {
 };
 
 //HELPERS
-async function planSave(plan) {
-  try {
-    const newPlan = await plan.save();
-    return Result.Success(newPlan);
-  } catch (error) {
-    return Result.Fail(error);
-  }
-}
+
 async function profileUpdate(authorId, createdPlan) {
   try {
     const updatedPlan = await Profile.findOneAndUpdate(
@@ -149,22 +143,6 @@ async function removePostFromProfile(authorId, postId) {
       { $pull: { posts: postId } },
       { new: true } // To return the updated document after removal
     );
-    return Result.Success(data);
-  } catch (error) {
-    return Result.Fail(error);
-  }
-}
-async function planFind(planId) {
-  try {
-    const data = await Plan.findById(planId);
-    return Result.Success(data);
-  } catch (error) {
-    return Result.Fail(error);
-  }
-}
-async function planDelete(planId) {
-  try {
-    const data = await Plan.findByIdAndDelete(planId);
     return Result.Success(data);
   } catch (error) {
     return Result.Fail(error);

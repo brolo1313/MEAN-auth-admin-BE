@@ -2,19 +2,21 @@ const bcrypt = require("bcryptjs");
 const Profile = require("../models/profile");
 const User = require("../models/user");
 const { AppError } = require("../helpers/errors");
+const { findById } = require("../helpers/default-db-actions")
 
 const updateProfilePassword = async (req, res, next) => {
   const { oldPassword, newPassword, confirmPassword } = req.body;
   const { id } = req.query;
 
   try {
-    const user = await User.findById(id);
+    const user = await findById(id, User);
 
-    if (!user) {
+    if (user.error) {
       throw new AppError(
         "Couldn't find user",
         500,
         1000,
+        user.error
       );
     }
 
