@@ -1,8 +1,6 @@
-
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const jwt = require("jsonwebtoken");
-
 
 const userSchema = new Schema(
   {
@@ -27,12 +25,11 @@ const userSchema = new Schema(
     },
     profile: {
       type: Schema.Types.ObjectId,
-      ref: 'Profile'
-  },
+      ref: "Profile",
+    },
   },
   { timestamps: true }
 );
-
 
 // userSchema.pre("save", async function (next) {
 //   if (!this.isModified("password")) return next();
