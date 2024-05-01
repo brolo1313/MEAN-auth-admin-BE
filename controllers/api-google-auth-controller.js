@@ -40,7 +40,7 @@ const handleGoogleAuth = async (req, res) => {
       const userData = JSON.stringify(responseObject);
 
       // Construct the redirect URL with the userData as a query parameter
-      const redirectUrl = `http://localhost:4202/login?userData=${encodeURIComponent(
+      const redirectUrl = `https://mean-sand-box-fe.vercel.app/login?userData=${encodeURIComponent(
         userData
       )}`;
 

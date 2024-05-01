@@ -113,7 +113,7 @@ const signIn = async (req, res, next) => {
       email: user.email,
       roles: user.roles,
       accessToken: token,
-      expiresIn: process.env.EXPIRES_IN,
+      expiresIn: process.env.EXPIRES_IN || "1h",
     });
   } catch (error) {
     next(error);
