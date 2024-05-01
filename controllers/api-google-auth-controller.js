@@ -24,11 +24,11 @@ const handleGoogleAuth = async (req, res) => {
       const token = jwt.sign({ id: req.user._id }, process.env.SECRET_KEY, {
         algorithm: "HS256",
         allowInsecureKeySizes: true,
-        expiresIn: process.env.EXPIRES_IN,
+        expiresIn: 3600,
       });
 
       const responseObject = {
-        expiresIn: process.env.EXPIRES_IN,
+        expiresIn: 3600,
         accessToken: token,
         id:  req.user._id,
         username:  req.user.username,
