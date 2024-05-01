@@ -4,7 +4,7 @@ const User = require("../models/user");
 const Profile = require("../models/profile");
 const jwt = require("jsonwebtoken");
 
-const getUsers = (req, res) => {
+const getUsers = (req, res, next) => {
   User.find()
     .then((users) => {
       const usersWithoutPassword = users.map((user) => {
@@ -20,7 +20,7 @@ const getUsers = (req, res) => {
     });
 };
 
-const signUp = async (req, res) => {
+const signUp = async (req, res, next) => {
   const { username, email, password, role = "user" } = req.body;
 
   const user = new User({
@@ -74,7 +74,7 @@ const signUp = async (req, res) => {
   }
 };
 
-const signIn = async (req, res) => {
+const signIn = async (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -120,7 +120,7 @@ const signIn = async (req, res) => {
   }
 };
 
-const resetPassword = async (req, res) => {
+const resetPassword = async (req, res, next) => {
   const { email } = req.body;
 
   if (!email) {
