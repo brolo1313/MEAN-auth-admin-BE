@@ -5,8 +5,6 @@ const passport = require("passport");
 require("../middlewares/passport");
 
 const handleGoogleAuth = async (req, res) => {
-  console.log("profile", req.user);
-
   //   if (req.user.error) {
   //     const responseObject = {
   //       message: req.user.error
