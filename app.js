@@ -8,6 +8,9 @@ const dotenv = require("dotenv").config();
 const connectDB = require("./utils/db");
 const chalk = require("chalk");
 
+const passport = require('passport');
+require('./middlewares/passport');
+
 const errorMsg = chalk.bgKeyword("white").redBright;
 const successMsg = chalk.bgKeyword("green").white;
 
@@ -17,12 +20,13 @@ const corsOptions = {
   origin: ["http://localhost:4202", "http://localhost:4201", "https://mean-sand-box-fe.vercel.app"],
 };
 
+app.use(passport.initialize());
 app.use(cors(corsOptions));
 
 const apiPlanRoutes = require("./routes/api-plan-routes");
 const apiAuthRoutes = require("./routes/api-auth-routes");
 const apiProfileRoutes = require("./routes/api-profile-routes");
-
+const apiGoogleRoutes = require("./routes/api-google-routes");
 connectDB();
 
 // Start the server
@@ -41,6 +45,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json()); // Parse JSON request body
 
 //API
+app.use(apiGoogleRoutes);
 app.use(apiPlanRoutes);
 app.use(apiAuthRoutes);
 app.use(apiProfileRoutes);

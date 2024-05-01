@@ -7,7 +7,6 @@ const userSchema = new Schema(
     username: {
       type: String,
       required: true,
-      unique: true,
     },
     email: {
       type: String,
@@ -27,6 +26,10 @@ const userSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "Profile",
     },
+    google: {
+      id: String,
+      email: String,
+    }
   },
   { timestamps: true }
 );
