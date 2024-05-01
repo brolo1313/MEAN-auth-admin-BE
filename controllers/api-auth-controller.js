@@ -4,8 +4,6 @@ const User = require("../models/user");
 const Profile = require("../models/profile");
 const jwt = require("jsonwebtoken");
 
-const expiresIn = 3600;
-const secretKey = process.env.SECRET_KEY || "default-secret-key";
 
 const errorHandler = (res, error) =>
   res.status(500).json({
@@ -117,10 +115,10 @@ const signIn = async (req, res) => {
       });
     }
 
-    const token = jwt.sign({ id: user.id }, secretKey, {
+    const token = jwt.sign({ id: user.id }, process.env.SECRET_KEY, {
       algorithm: "HS256",
       allowInsecureKeySizes: true,
-      expiresIn: expiresIn,
+      expiresIn: process.env.EXPIRES_IN,
     });
 
     res.status(200).send({
@@ -129,7 +127,7 @@ const signIn = async (req, res) => {
       email: user.email,
       roles: user.roles,
       accessToken: token,
-      expiresIn,
+      expiresIn: process.env.EXPIRES_IN,
     });
   } catch (error) {
     console.error("Error in signIn function:", error);

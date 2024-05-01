@@ -1,30 +1,40 @@
 const bcrypt = require("bcryptjs");
-const User = require("../models/user");
-const Profile = require("../models/profile");
 const jwt = require("jsonwebtoken");
 
 const passport = require("passport");
 require("../middlewares/passport");
 
-const expiresIn = 3600;
-const secretKey = process.env.SECRET_KEY || "default-secret-key";
 
 const handleGoogleAuth = async (req, res) => {
-  const existingEmail = await User.findOne({ email: req.user.email });
 
-  if (existingEmail) {
-    return res.status(400).send({ message: "Email is already in use!" });
-  }
+    console.log('google auth callback', req);
+//   if (req.user.error) {
+//     const responseObject = {
+//       message: req.user.error
+//     };
+
+//     const data = JSON.stringify(responseObject);
+//     const redirectUrl = `http://localhost:4202/login?error=${encodeURIComponent(
+//       data
+//     )}`;
+//     return res.redirect(redirectUrl);
+//   }
 
   // If user does not exist, create new user and return token
   // The code below shows only how to return token and user object from Google
   try {
     if (req.user) {
-      const token = await jwt.sign(req.user, process.env.SECRET_KEY);
+      
+    const token = jwt.sign(req.user, process.env.SECRET_KEY, {
+        algorithm: "HS256",
+        allowInsecureKeySizes: true,
+        expiresIn: process.env.EXPIRES_IN,
+      });
       const { email } = req.user;
       const responseObject = {
+        expiresIn: process.env.EXPIRES_IN,
         accessToken: token,
-        email,
+        ...req.user,
       };
 
       // Convert the responseObject to JSON
