@@ -4,18 +4,6 @@ const User = require("../models/user");
 const Profile = require("../models/profile");
 const jwt = require("jsonwebtoken");
 
-
-const errorHandler = (res, error) =>
-  res.status(500).json({
-    app_err_default: {
-      notification: "Помилка сервера",
-      code: 10000,
-      message: "Default Error",
-    },
-  });
-
-const nativeError = (res, error) => res.status(500).json({ message: error.message || 'Internal server error' });
-
 const getUsers = (req, res) => {
   User.find()
     .then((users) => {
@@ -28,7 +16,7 @@ const getUsers = (req, res) => {
       res.status(200).json(usersWithoutPassword);
     })
     .catch((error) => {
-      errorHandler(res);
+      next(error);
     });
 };
 
@@ -54,8 +42,8 @@ const signUp = async (req, res) => {
     const profile = new Profile({
       user: createdUser._id,
       name: username,
-      title: '',
-      bio: '',
+      title: "",
+      bio: "",
       role: createdUser.role,
       profilePics: "",
       links: {
@@ -78,31 +66,29 @@ const signUp = async (req, res) => {
     await User.findOneAndUpdate(
       { _id: createdUser._id },
       { $set: { profile: createdProfile._id } }
-  )
+    );
 
     res.status(200).json(createdUser);
   } catch (error) {
-    console.log('error',error);
-    return nativeError(res, error);
+    next(error);
   }
 };
 
 const signIn = async (req, res) => {
-  const { username, password } = req.body;
+  const { email, password } = req.body;
 
-  if (!username || !password) {
-    return res
-      .status(400)
-      .json({ message: "Username and password are required" });
+  if (!email || !password) {
+    return res.status(400).json({ message: "Email and password are required" });
   }
 
   try {
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ email });
+
     // Check if the user exists and has a password
     if (!user || !user.password) {
       return res.status(400).send({
         accessToken: null,
-        message: "Invalid login or password",
+        message: "Invalid email or password",
       });
     }
 
@@ -111,7 +97,7 @@ const signIn = async (req, res) => {
     if (!isPasswordValid) {
       return res.status(400).send({
         accessToken: null,
-        message: "Invalid login or password",
+        message: "Invalid email or password",
       });
     }
 
@@ -130,8 +116,7 @@ const signIn = async (req, res) => {
       expiresIn: process.env.EXPIRES_IN,
     });
   } catch (error) {
-    console.error("Error in signIn function:", error);
-    return nativeError(res, error);
+    next(error);
   }
 };
 
@@ -185,9 +170,7 @@ const resetPassword = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(500).send({
-      message: "Failed to reset password. Please try again later.",
-    });
+    next(error);
   }
 };
 module.exports = {
