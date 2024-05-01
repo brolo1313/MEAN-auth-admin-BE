@@ -76,16 +76,17 @@ const signUp = async (req, res, next) => {
 
 const signIn = async (req, res, next) => {
   const { email, password } = req.body;
-
+  const lowerCaseEmail = email.toLowerCase();
+  
   if (!email || !password) {
     return res.status(400).json({ message: "Email and password are required" });
   }
 
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: lowerCaseEmail });
 
     // Check if the user exists and has a password
-    if (!user || !user.password) {
+    if (!lowerCaseEmail || !user?.password) {
       return res.status(400).send({
         accessToken: null,
         message: "Invalid email or password",
