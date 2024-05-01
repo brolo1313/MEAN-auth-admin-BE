@@ -19,16 +19,22 @@ passport.use(
       passReqToCallback: true,
     },
     async function (request, accessToken, refreshToken, profile, done) {
-//       console.log("profile", profile);
       const existingEmail = await User.findOne({ email: profile.email });
-//       console.log('existingEmail', existingEmail);
-      if (existingEmail) {
-        return done(null, { error: "Email already exists, try login with name and password" });
+      const existingGoogleId = await User.findOne({ "google.id": profile.id });
+        console.log('existingGoogleId', existingGoogleId);
+      console.log('existingEmail', existingEmail);
+      if (existingEmail && !existingGoogleId) {
+        existingEmail.google = {
+                id: profile.id,
+                email: profile.email,
+         };
+        await existingEmail.save();
+              
+        return done(null, existingEmail)
       }
 
-      if(!existingEmail) {
-        //create user
-        //new User model or separate model create????
+      if(existingEmail && existingGoogleId) {
+        return done(null, existingEmail)
       }
     
       return done(null, profile);

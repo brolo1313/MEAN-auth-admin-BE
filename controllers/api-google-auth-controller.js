@@ -4,37 +4,38 @@ const jwt = require("jsonwebtoken");
 const passport = require("passport");
 require("../middlewares/passport");
 
-
 const handleGoogleAuth = async (req, res) => {
+  console.log("profile", req.user);
 
-    console.log('google auth callback', req);
-//   if (req.user.error) {
-//     const responseObject = {
-//       message: req.user.error
-//     };
+  //   if (req.user.error) {
+  //     const responseObject = {
+  //       message: req.user.error
+  //     };
 
-//     const data = JSON.stringify(responseObject);
-//     const redirectUrl = `http://localhost:4202/login?error=${encodeURIComponent(
-//       data
-//     )}`;
-//     return res.redirect(redirectUrl);
-//   }
+  //     const data = JSON.stringify(responseObject);
+  //     const redirectUrl = `http://localhost:4202/login?error=${encodeURIComponent(
+  //       data
+  //     )}`;
+  //     return res.redirect(redirectUrl);
+  //   }
 
   // If user does not exist, create new user and return token
   // The code below shows only how to return token and user object from Google
   try {
     if (req.user) {
-      
-    const token = jwt.sign(req.user, process.env.SECRET_KEY, {
+      const token = jwt.sign({ id: req.user._id }, process.env.SECRET_KEY, {
         algorithm: "HS256",
         allowInsecureKeySizes: true,
         expiresIn: process.env.EXPIRES_IN,
       });
-      const { email } = req.user;
+
       const responseObject = {
         expiresIn: process.env.EXPIRES_IN,
         accessToken: token,
-        ...req.user,
+        id:  req.user._id,
+        username:  req.user.username,
+        email: req.user.email,
+        roles: req.user.role,
       };
 
       // Convert the responseObject to JSON
