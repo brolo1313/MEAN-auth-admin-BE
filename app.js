@@ -8,9 +8,6 @@ const dotenv = require("dotenv").config();
 const connectDB = require("./utils/db");
 const chalk = require("chalk");
 
-const passport = require('passport');
-require('./middlewares/passport');
-
 const errorMsg = chalk.bgKeyword("white").redBright;
 const successMsg = chalk.bgKeyword("green").white;
 
@@ -20,7 +17,6 @@ const corsOptions = {
   origin: ["http://localhost:4202", "http://localhost:4201", "https://mean-sand-box-fe.vercel.app"],
 };
 
-app.use(passport.initialize());
 app.use(cors(corsOptions));
 
 const apiPlanRoutes = require("./routes/api-plan-routes");

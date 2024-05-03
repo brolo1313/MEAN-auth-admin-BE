@@ -1,8 +1,4 @@
-const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-
-const passport = require("passport");
-require("../middlewares/passport");
 
 const handleGoogleAuth = async (req, res) => {
   const { idToken, ...googleProfile } = req.body;
