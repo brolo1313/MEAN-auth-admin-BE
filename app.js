@@ -14,7 +14,7 @@ const successMsg = chalk.bgKeyword("green").white;
 const PORT = process.env.PORT || 3000;
 
 const corsOptions = {
-  origin: ["http://localhost:4202", "http://localhost:4201", "https://mean-sand-box-fe.vercel.app", "https://education-io.vercel.app", "http://192.168.31.60:3001"],
+  origin: ["http://localhost:4202", "http://localhost:4201", "https://mean-sand-box-fe.vercel.app", "https://education-io.vercel.app", "http://192.168.31.60:3001", "https://react-authorization-bounty.vercel.app"],
 };
 
 app.use(cors(corsOptions));
