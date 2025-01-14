@@ -37,7 +37,28 @@ Clone this repository by SSH: `git@github.com:brolo1313/mean-sandBox-BE.git`.
 Then run `npm i`.
 
 # Dev
+If you want to test locally, you should have your own keys, at least :
+
+`SECRET_KEY` and `MONGO_URL` and ` it will promise that you will work with sing up/in
+
+All env variables
+
+`SECRET_KEY`
+`MONGO_URL`
+`DEFAULT_PASSWORD`
+`GOOGLE_CALLBACK_UR`
+`EXPIRES_IN`
+`GOOGLE_CLIENT_ID`
+`GOOGLE_CLIENT_SECRET`
+`PORT_EMAIL`
+`SERVICE`
+`HOST_EMAIL`
+`USER_EMAIL`
+`PASS_EMAIL`
+`ENV`
+
 For start server type  `npm run dev`
+
 
 
 

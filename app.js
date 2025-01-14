@@ -14,7 +14,7 @@ const successMsg = chalk.bgKeyword("green").white;
 const PORT = process.env.PORT || 3000;
 
 const corsOptions = {
-  origin: ["http://localhost:4202", "http://localhost:4201", "https://mean-sand-box-fe.vercel.app", "https://education-io.vercel.app"],
+  origin: ["http://localhost:4202", "http://localhost:4201", "https://mean-sand-box-fe.vercel.app", "https://education-io.vercel.app", "http://192.168.31.60:3001"],
 };
 
 app.use(cors(corsOptions));
@@ -45,6 +45,11 @@ app.use(apiGoogleRoutes);
 app.use(apiPlanRoutes);
 app.use(apiAuthRoutes);
 app.use(apiProfileRoutes);
+
+app.use((req, res, next) => {
+  res.status(404).json({ message: 'Endpoint not found' });
+});
+
 
 // 👇 add a global error handler after all the routes.
 app.use((err, req, res, next) => {
